@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   editButton: {
-    backgroundColor: "#6fbeb4ff", // Verde aqua para diferenciarlo
+    backgroundColor: "#6fbeb4ff", 
   },
   buttonText: {
     color: "white",

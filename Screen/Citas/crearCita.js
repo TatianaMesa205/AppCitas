@@ -73,40 +73,40 @@ export default function CrearCita({ navigation }) {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    justifyContent: "center", 
     padding: 20, 
-    backgroundColor: "#d1dae4ff" // fondo gris-azulado claro
+    backgroundColor: "#f8dfebff", 
+    alignItems: "stretch", 
   },
   title: { 
     fontSize: 24, 
-    marginBottom: 25, 
+    marginBottom: 20, 
     textAlign: "center", 
     fontWeight: "bold", 
-    color: "#2c3e50" // azul opaco oscuro
+    color: "#db86cdff" 
   },
   input: {
     borderWidth: 1,
-    borderColor: "#3a506b", // azul opaco medio
+    borderColor: "#ffb1ebff", 
     padding: 12,
     marginVertical: 6,
     borderRadius: 10,
     backgroundColor: "#ffffff",
-    color: "#2c3e50", // texto azul opaco
+    color: "#a96b6bff", 
   },
   button: {
-    backgroundColor: "#3a506b", // azul opaco
-    paddingVertical: 15,
-    borderRadius: 12,
+    backgroundColor: "#ffacf4ff", 
+    padding: 15,
+    borderRadius: 25,
     alignItems: "center",
     marginTop: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
-    shadowRadius: 3,
+    shadowRadius: 4,
     elevation: 3,
   },
   buttonText: { 
-    color: "#ffffff", 
+    color: "#fff", 
     fontWeight: "bold", 
     fontSize: 16 
   },

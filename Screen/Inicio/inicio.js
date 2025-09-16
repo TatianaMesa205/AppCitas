@@ -28,83 +28,83 @@ export default function Inicio({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Recuadro de Módulo 2 */}
+        {/* Recuadro de Medicos */}
         <View style={styles.card}>
           <Ionicons name="person-circle-outline" size={40} color="#63718aff" />
-          <Text style={styles.cardTitle}>Módulo 2</Text>
+          <Text style={styles.cardTitle}>Médicos</Text>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("ListarCitas")}
           >
-            <Text style={styles.buttonText}>Ver Citas</Text>
+            <Text style={styles.buttonText}>Ver Medicos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
             onPress={() => navigation.navigate("CrearCita")}
           >
-            <Text style={styles.buttonText}>Agendar Cita</Text>
+            <Text style={styles.buttonText}>Agregar medico</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recuadro de Módulo 3 */}
+        {/* Recuadro de Pacientes */}
         <View style={styles.card}>
           <Ionicons name="paw-outline" size={40} color="#63718aff" />
-          <Text style={styles.cardTitle}>Módulo 3</Text>
+          <Text style={styles.cardTitle}>Pacientes</Text>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("ListarCitas")}
           >
-            <Text style={styles.buttonText}>Ver Citas</Text>
+            <Text style={styles.buttonText}>Ver Pacientes</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
             onPress={() => navigation.navigate("CrearCita")}
           >
-            <Text style={styles.buttonText}>Agendar Cita</Text>
+            <Text style={styles.buttonText}>Agregar Pacientes</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recuadro de Módulo 4 */}
+        {/* Recuadro de Especialidades */}
         <View style={styles.card}>
           <Ionicons name="heart-outline" size={40} color="#63718aff" />
-          <Text style={styles.cardTitle}>Módulo 4</Text>
+          <Text style={styles.cardTitle}>Especialidades</Text>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("ListarCitas")}
           >
-            <Text style={styles.buttonText}>Ver Citas</Text>
+            <Text style={styles.buttonText}>Ver Especialidades</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
             onPress={() => navigation.navigate("CrearCita")}
           >
-            <Text style={styles.buttonText}>Agendar Cita</Text>
+            <Text style={styles.buttonText}>Agregar Especialidad</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recuadro de Módulo 5 */}
+        {/* Recuadro de Consultorios */}
         <View style={styles.card}>
           <Ionicons name="settings-outline" size={40} color="#63718aff" />
-          <Text style={styles.cardTitle}>Módulo 5</Text>
+          <Text style={styles.cardTitle}>Consultorios</Text>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate("ListarCitas")}
           >
-            <Text style={styles.buttonText}>Ver Citas</Text>
+            <Text style={styles.buttonText}>Ver Consultorios</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
             onPress={() => navigation.navigate("CrearCita")}
           >
-            <Text style={styles.buttonText}>Agendar Cita</Text>
+            <Text style={styles.buttonText}>Agregar Consultorio</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -130,11 +130,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    gap: 12,
+    gap: 20,
   },
   card: {
     backgroundColor: "#fff",
-    width: "40%",
+    width: "45%",
     borderRadius: 20,
     padding: 15,
     margin: 6,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cardTitle: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#464e58ff",
     marginBottom: 4,
@@ -155,9 +155,9 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#97d6afff",
     paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
     borderRadius: 25,
-    marginVertical: 4,
+    marginVertical: 6,
     elevation: 3,
   },
   secondaryButton: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "600",
     textAlign: "center",
   },

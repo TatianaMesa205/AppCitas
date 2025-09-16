@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
-export default function CrearEspecialidad({ navigation }) {
+export default function EditarEspecialidad({ navigation }) {
   const [nombreE, setNombreE] = useState("");
 
-
-  const handleCrear = () => {
+  const handleEditar = () => {
     if (nombreE) {
-      alert("✅ Especialidad creada (simulado)");
+      alert("✅ Especialiad editada (simulado)");
       navigation.navigate("ListarEspecialidades");
     } else {
       alert("Por favor completa todos los campos");
@@ -16,17 +15,18 @@ export default function CrearEspecialidad({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar nuevas especialidades</Text>
+      <Text style={styles.title}>Editar especialidad</Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Ingrese el nombre de la especialidad"
+        placeholder="Nombre de la especialidad"
         placeholderTextColor="#8e9aaf"
         value={nombreE}
         onChangeText={setNombreE}
       />
-      
-      <TouchableOpacity style={styles.button} onPress={handleCrear}>
-        <Text style={styles.buttonText}>Crear Especialidad</Text>
+
+      <TouchableOpacity style={styles.button} onPress={handleEditar}>
+        <Text style={styles.buttonText}>Confirmar edición</Text>
       </TouchableOpacity>
     </View>
   );
@@ -36,27 +36,27 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     padding: 20, 
-    backgroundColor: "#f8dfebff", 
+    backgroundColor: "#fff4e6",
     alignItems: "stretch", 
   },
   title: { 
     fontSize: 24, 
     marginBottom: 20, 
-    textAlign: "center", 
+    textAlign: "center",
     fontWeight: "bold", 
-    color: "#db86cdff" 
+    color: "#ffb97bff" 
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ffb1ebff", 
+    borderColor: "#f4a261",
     padding: 12,
     marginVertical: 6,
     borderRadius: 10,
     backgroundColor: "#ffffff",
-    color: "#a96b6bff", 
+    color: "#fbb565ff", 
   },
   button: {
-    backgroundColor: "#ffacf4ff", 
+    backgroundColor: "#ffaa95ff",
     padding: 15,
     borderRadius: 25,
     alignItems: "center",

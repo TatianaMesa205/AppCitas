@@ -30,19 +30,19 @@ export default function Inicio({ navigation }) {
 
         {/* Recuadro de Medicos */}
         <View style={styles.card}>
-          <Ionicons name="person-circle-outline" size={40} color="#63718aff" />
+          <Ionicons name="medkit-outline" size={40} color="#63718aff" />
           <Text style={styles.cardTitle}>Médicos</Text>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarCitas")}
+            onPress={() => navigation.navigate("ListarMedicos")}
           >
             <Text style={styles.buttonText}>Ver Medicos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearCita")}
+            onPress={() => navigation.navigate("CrearMedico")}
           >
             <Text style={styles.buttonText}>Agregar medico</Text>
           </TouchableOpacity>
@@ -50,7 +50,7 @@ export default function Inicio({ navigation }) {
 
         {/* Recuadro de Pacientes */}
         <View style={styles.card}>
-          <Ionicons name="paw-outline" size={40} color="#63718aff" />
+          <Ionicons name="people-outline" size={40} color="#63718aff" />
           <Text style={styles.cardTitle}>Pacientes</Text>
 
           <TouchableOpacity
@@ -70,19 +70,19 @@ export default function Inicio({ navigation }) {
 
         {/* Recuadro de Especialidades */}
         <View style={styles.card}>
-          <Ionicons name="heart-outline" size={40} color="#63718aff" />
+          <Ionicons name="layers-outline" size={40} color="#63718aff" />
           <Text style={styles.cardTitle}>Especialidades</Text>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarCitas")}
+            onPress={() => navigation.navigate("ListarEspecialidades")}
           >
             <Text style={styles.buttonText}>Ver Especialidades</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearCita")}
+            onPress={() => navigation.navigate("CrearEspecialidad")}
           >
             <Text style={styles.buttonText}>Agregar Especialidad</Text>
           </TouchableOpacity>
@@ -90,19 +90,19 @@ export default function Inicio({ navigation }) {
 
         {/* Recuadro de Consultorios */}
         <View style={styles.card}>
-          <Ionicons name="settings-outline" size={40} color="#63718aff" />
+          <Ionicons name="business-outline" size={40} color="#63718aff" />
           <Text style={styles.cardTitle}>Consultorios</Text>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarCitas")}
+            onPress={() => navigation.navigate("ListarConsultorios")}
           >
             <Text style={styles.buttonText}>Ver Consultorios</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearCita")}
+            onPress={() => navigation.navigate("CrearConsultorio")}
           >
             <Text style={styles.buttonText}>Agregar Consultorio</Text>
           </TouchableOpacity>

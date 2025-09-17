@@ -29,7 +29,7 @@ export default function ListarConsultorios({ navigation }) {
             onPress={() => navigation.navigate("DetalleConsultorio", { consultorio: item })}
           >
             <View style={styles.cardContent}>
-              <Ionicons name="calendar-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
+              <Ionicons name="business-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
               <View>
                 <Text style={styles.ubicacion}>{item.ubicacion}</Text>
                 <Text style={styles.numero}>👨‍⚕️ {item.numero}</Text>

@@ -27,7 +27,7 @@ export default function ListarMedicos({ navigation }) {
             onPress={() => navigation.navigate("DetalleMedico", { medico: item })}
           >
             <View style={styles.cardContent}>
-              <Ionicons name="calendar-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
+              <Ionicons name="people-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
               <View>
                 <Text style={styles.nombreM}>{item.nombreM + " " + item.apellidoM} - {item.idEspecialidad}</Text>
                 <Text style={styles.telefono}>📞 {item.telefono}</Text>

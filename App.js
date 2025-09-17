@@ -27,6 +27,10 @@ import CrearMedico from "./Screen/Medicos/crearMedico";
 import DetalleMedico from "./Screen/Medicos/detalleMedico";
 import EditarMedico from "./Screen/Medicos/editarMedico";
 
+import ListarPacientes from "./Screen/Pacientes/listarPacientes";
+import CrearPaciente from "./Screen/Pacientes/crearPaciente";
+import DetallePaciente from "./Screen/Pacientes/detallePaciente";
+import EditarPaciente from "./Screen/Pacientes/editarPaciente";
 
 const Stack = createStackNavigator();
 
@@ -136,6 +140,28 @@ export default function App() {
           name="EditarMedico"
           component={EditarMedico}
           options={{ title: "Editar medico" }}
+        />
+
+
+        <Stack.Screen
+          name="ListarPacientes"
+          component={ListarPacientes}
+          options={{ title: "Lista de pacientes" }}
+        />
+        <Stack.Screen
+          name="CrearPaciente"
+          component={CrearPaciente}
+          options={{ title: "Agregar paciente" }}
+        />
+        <Stack.Screen
+          name="DetallePaciente"
+          component={DetallePaciente}
+          options={{ title: "Detalle del paciente" }}
+        />
+        <Stack.Screen
+          name="EditarPaciente"
+          component={EditarPaciente}
+          options={{ title: "Editar paciente" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

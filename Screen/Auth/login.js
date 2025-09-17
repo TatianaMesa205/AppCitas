@@ -6,16 +6,42 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Importar librería
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    if (email && password) {
-      navigation.navigate("Inicio");
-    } else {
+  const handleLogin = async () => {
+    if (!email || !password) {
       alert("Por favor ingresa los datos");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://192.168.11.29:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.access_token) {
+        // ✅ Guardar token en AsyncStorage
+        await AsyncStorage.setItem("token", data.access_token);
+
+        alert(data.message); // Ej: "Hi Paula"
+        navigation.navigate("Inicio"); // Redirige al inicio
+      } else {
+        alert(data.message || "Error en el login");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo conectar con el servidor");
     }
   };
 
@@ -54,19 +80,8 @@ export default function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ead1f0ff", // Fondo rosado suave
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-    color: "#95519bff",
-  },
+  container: { flex: 1, backgroundColor: "#ead1f0ff", justifyContent: "center", padding: 20 },
+  title: { fontSize: 26, fontWeight: "bold", marginBottom: 30, textAlign: "center", color: "#95519bff" },
   input: {
     borderWidth: 1,
     borderColor: "#eb99ffff",
@@ -83,18 +98,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginVertical: 10,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
   },
-  secondaryButton: {
-    backgroundColor: "#855ba8ff",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-  },
+  secondaryButton: { backgroundColor: "#855ba8ff" },
+  buttonText: { color: "white", fontSize: 18, fontWeight: "600" },
 });

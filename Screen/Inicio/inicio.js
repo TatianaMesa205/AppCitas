@@ -40,32 +40,6 @@ export default function Inicio({ navigation }) {
     fetchUser();
   }, []);
 
-    const handleLogout = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token"); // el token que guardaste en el login
-      const response = await fetch(`${API_BASE_URL}/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        await AsyncStorage.removeItem("token"); // borra el token local
-        Alert.alert("Éxito", data.message);
-        navigation.replace("Login"); // redirige al login
-      } else {
-        Alert.alert("Error", data.message || "No se pudo cerrar sesión");
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Ocurrió un problema al cerrar sesión");
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -81,14 +55,14 @@ export default function Inicio({ navigation }) {
           <Text style={styles.cardTitle}>Gestión de Citas</Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarCitas")}
+            onPress={() => navigation.navigate("Citas", { screen: "ListarCitas" })}
           >
             <Text style={styles.buttonText}>Ver Citas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearCita")}
+            onPress={() => navigation.navigate("Citas", { screen: "CrearCita" })}
           >
             <Text style={styles.buttonText}>Agendar Cita</Text>
           </TouchableOpacity>
@@ -101,14 +75,14 @@ export default function Inicio({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarMedicos")}
+            onPress={() => navigation.navigate("Medicos", { screen: "ListarMedicos" })}
           >
             <Text style={styles.buttonText}>Ver Médicos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearMedico")}
+            onPress={() => navigation.navigate("Medicos", { screen: "CrearMedico" })}
           >
             <Text style={styles.buttonText}>Agregar Médico</Text>
           </TouchableOpacity>
@@ -121,14 +95,14 @@ export default function Inicio({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarPacientes")}
+            onPress={() => navigation.navigate("Pacientes", { screen: "ListarPacientes" })}
           >
             <Text style={styles.buttonText}>Ver Pacientes</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearPaciente")}
+            onPress={() => navigation.navigate("Pacientes", { screen: "CrearPaciente" })}
           >
             <Text style={styles.buttonText}>Agregar Pacientes</Text>
           </TouchableOpacity>
@@ -141,14 +115,14 @@ export default function Inicio({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarEspecialidades")}
+            onPress={() => navigation.navigate("Especialidades", { screen: "ListarEspecialidades" })}
           >
             <Text style={styles.buttonText}>Ver Especialidades</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearEspecialidad")}
+            onPress={() => navigation.navigate("Especialidades", { screen: "CrearEspecialidad" })}
           >
             <Text style={styles.buttonText}>Agregar Especialidad</Text>
           </TouchableOpacity>
@@ -161,24 +135,19 @@ export default function Inicio({ navigation }) {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("ListarConsultorios")}
+            onPress={() => navigation.navigate("Consultorios", { screen: "ListarConsultorios" })}
           >
             <Text style={styles.buttonText}>Ver Consultorios</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("CrearConsultorio")}
+            onPress={() => navigation.navigate("Consultorios", { screen: "CrearConsultorios" })}
           >
             <Text style={styles.buttonText}>Agregar Consultorio</Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Botón Logout */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
 
     </View>
   );

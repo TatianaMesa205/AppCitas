@@ -1,12 +1,7 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Importar librería
+import API_BASE_URL from "../../Src/Config"; // Import para url 
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -19,7 +14,7 @@ export default function Login({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.11.29:8000/api/login", {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Importar
 // ⚠️ Asegúrate que tu backend tenga el endpoint /api/me protegido con sanctum
-
+import API_BASE_URL from "../../Src/Config"; // Import para url 
 
 export default function Inicio({ navigation }) {
   const [userName, setUserName] = useState("");
@@ -18,7 +18,7 @@ export default function Inicio({ navigation }) {
           return;
         }
 
-        const response = await fetch("http://192.168.11.29:8000/api/me", {
+        const response = await fetch(`${API_BASE_URL}/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
@@ -43,7 +43,7 @@ export default function Inicio({ navigation }) {
     const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem("token"); // el token que guardaste en el login
-      const response = await fetch("http://192.168.11.29:8000/api/logout", {
+      const response = await fetch(`${API_BASE_URL}/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

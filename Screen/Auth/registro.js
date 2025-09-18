@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import API_BASE_URL from "../../Src/Config"; // Import para url 
 
 export default function Registro({ navigation }) {
   const [name, setName] = useState("");
@@ -14,7 +15,7 @@ export default function Registro({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.11.29:8000/api/registrar", {
+      const response = await fetch(`${API_BASE_URL}/registrar`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

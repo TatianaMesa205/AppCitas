@@ -2,10 +2,12 @@ import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
+
 // Importar pantallas
 import Login from "./Screen/Auth/login";
 import Registro from "./Screen/Auth/registro";
-import Inicio from "./Screen/Inicio/inicio";
+
+import Tabs from "./Src/Tabs"; // importa el TabNavigator
 
 import ListarCitas from "./Screen/Citas/listarCitas";
 import CrearCita from "./Screen/Citas/crearCita";
@@ -48,12 +50,12 @@ export default function App() {
           component={Registro}
           options={{ title: "Registro" }}
         />
+
         <Stack.Screen
           name="Inicio"
-          component={Inicio}
-          options={{ title: "Menú Principal" }}
+          component={Tabs}
+          options={{ title: "Menú Principal", headerShown: false }}
         />
-
 
         <Stack.Screen
           name="ListarCitas"

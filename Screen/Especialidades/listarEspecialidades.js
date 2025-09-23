@@ -1,42 +1,80 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-const especialidades = [
-  { id: "1", nombreE: "Maternidad" },
-  { id: "2", nombreE: "Pediatría" },
-  { id: "3", nombreE: "Cardiología" },
-  { id: "4", nombreE: "Odontología" },
-  { id: "5", nombreE: "Dermatología" },
-  { id: "6", nombreE: "Oftalmología" },
-  { id: "7", nombreE: "Traumatología" },
-  { id: "8", nombreE: "Neurología" },
-  { id: "9", nombreE: "Psicología" },
-  { id: "10", nombreE: "Nutrición" },
-];
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
 export default function ListarEspecialidades({ navigation }) {
+  const [especialidades, setEspecialidades] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEspecialidades = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token"); // si tu endpoint está protegido
+        const response = await fetch(`${API_BASE_URL}/listarEspecialidades`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setEspecialidades(data);
+        } else {
+          console.error("Error en la respuesta:", data);
+        }
+      } catch (error) {
+        console.error("Error obteniendo especialidades:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEspecialidades();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#706180ff" />
+        <Text style={{ marginTop: 10, color: "#706180ff" }}>
+          Cargando especialidades...
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📅 Lista de especialidades</Text>
+      <Text style={styles.title}>📅 Lista de Especialidades</Text>
 
       <FlatList
         data={especialidades}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("DetalleEspecialidad", { especialidad: item })}
+            onPress={() =>
+              navigation.navigate("DetalleEspecialidad", { especialidad: item })
+            }
           >
             <View style={styles.cardContent}>
-              <Ionicons name="medkit-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
-              <View>
-                <Text style={styles.nombreE}>{item.nombreE}</Text>
-              </View>
+              <Ionicons
+                name="medkit-outline"
+                size={28}
+                color="#b2a3c0ff"
+                style={{ marginRight: 10 }}
+              />
+              <Text style={styles.nombreE}>{item.nombre_e}</Text>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="#ffffffff" />
+            <Ionicons
+              name="chevron-forward-outline"
+              size={24}
+              color="#706180ff"
+            />
           </TouchableOpacity>
         )}
       />
@@ -47,7 +85,7 @@ export default function ListarEspecialidades({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f0ff", // lila muy suave
+    backgroundColor: "#f8f0ff",
     padding: 20,
   },
   title: {
@@ -78,13 +116,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  ubicacion: {
+  nombreE: {
     fontSize: 16,
     fontWeight: "600",
     color: "#776985ff",
-  },
-  numero: {
-    fontSize: 14,
-    color: "#675285ff",
   },
 });

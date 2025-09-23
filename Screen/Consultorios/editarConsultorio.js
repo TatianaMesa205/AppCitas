@@ -1,24 +1,56 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
-export default function EditarConsultorio({ navigation }) {
-  const [numero, setNumero] = useState("");
-  const [ubicacion, setUbicacion] = useState("");
+export default function EditarConsultorio({ route, navigation }) {
+  const { id, numeroInicial, ubicacionInicial } = route.params; // 📌 datos enviados desde ListarConsultorios
+  const [numero, setNumero] = useState(numeroInicial || "");
+  const [ubicacion, setUbicacion] = useState(ubicacionInicial || "");
 
-  const handleEditar = () => {
-    if (numero && ubicacion) {
-      alert("✅ Consultorio editado (simulado)");
-      navigation.navigate("ListarConsultorios");
+  const handleEditar = async () => {
+  console.log("🟢 ID recibido:", id);
+  console.log("🟢 Endpoint:", `${API_BASE_URL}/actualizarConsultorios/${id}`);
+
+  if (!numero || !ubicacion) {
+    Alert.alert("⚠️ Error", "Por favor completa todos los campos");
+    return;
+  }
+
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const response = await fetch(`${API_BASE_URL}/actualizarConsultorios/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ numero, ubicacion }),
+    });
+
+    console.log("🔵 Status:", response.status);
+
+    if (response.ok) {
+      Alert.alert("✅ Éxito", "Consultorio editado correctamente");
+      navigation.navigate("ListarConsultorios", { reload: true });
     } else {
-      alert("Por favor completa todos los campos");
+      const errorData = await response.json();
+      console.log("❌ Error en backend:", errorData);
+      Alert.alert("❌ Error", "No se pudo editar el consultorio");
     }
-  };
+  } catch (error) {
+    console.error("🚨 Error de conexión:", error);
+    Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
+  }
+};
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Editar consultorio</Text>
 
-    <TextInput
+      <TextInput
         style={styles.input}
         placeholder="Número del consultorio"
         placeholderTextColor="#8e9aaf"

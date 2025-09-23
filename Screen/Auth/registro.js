@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import API_BASE_URL from "../../Src/Config"; // Import para url 
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, FlatList } from "react-native";
+import API_BASE_URL from "../../Src/Config";
 
 export default function Registro({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const roles = [
+    { label: "Administrador", value: "admin" },
+    { label: "Paciente", value: "paciente" },
+  ];
 
   const handleRegister = async () => {
     if (!name || !email || !password || !role) {
@@ -72,13 +78,45 @@ export default function Registro({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Rol"
-        placeholderTextColor="#cc66beff"
-        value={role}
-        onChangeText={setRole}
-      />
+
+      {/* Botón para seleccionar rol */}
+      <TouchableOpacity
+        style={styles.selectButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.selectText}>
+          {role ? roles.find((r) => r.value === role)?.label : "Seleccionar Rol"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Modal estilizado */}
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Selecciona tu rol</Text>
+            <FlatList
+              data={roles}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    setRole(item.value);
+                    setModalVisible(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Registrarse</Text>
@@ -97,7 +135,7 @@ export default function Registro({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ead1f0ff", // Fondo rosado pastel
+    backgroundColor: "#ead1f0ff",
     justifyContent: "center",
     padding: 20,
   },
@@ -118,16 +156,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#5e0066ff",
   },
+  selectButton: {
+    borderWidth: 1,
+    borderColor: "#eb99ffff",
+    backgroundColor: "#fff0f5",
+    padding: 14,
+    marginVertical: 8,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  selectText: {
+    fontSize: 16,
+    color: "#5e0066ff",
+  },
   button: {
     backgroundColor: "#e29bdcff",
     paddingVertical: 15,
     borderRadius: 25,
     marginVertical: 10,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
     elevation: 4,
   },
   secondaryButton: {
@@ -137,5 +184,36 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "600",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 20,
+    width: "80%",
+    elevation: 5,
+    textAlign: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#95519bff",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  option: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    alignItems: "flex-start",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#5e0066ff",
   },
 });

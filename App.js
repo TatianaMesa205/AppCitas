@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./Screen/Auth/login";
 import Registro from "./Screen/Auth/registro";
 import Tabs from "./Src/Tabs";
+import TabsP from "./Src/TabsP";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,11 @@ export default function App() {
         <Stack.Screen 
           name="Inicio" 
           component={Tabs} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="InicioP" 
+          component={TabsP} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ Importar librería
-import API_BASE_URL from "../../Src/Config"; // Import para url 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -29,8 +29,21 @@ export default function Login({ navigation }) {
         // ✅ Guardar token en AsyncStorage
         await AsyncStorage.setItem("token", data.access_token);
 
-        alert(data.message); // Ej: "Hi Paula"
-        navigation.navigate("Inicio"); // Redirige al inicio
+        // ✅ Guardar role en AsyncStorage (si tu backend lo envía)
+        if (data.user && data.user.role) {
+          await AsyncStorage.setItem("role", data.user.role);
+        }
+
+        alert(data.message);
+
+        // ✅ Redirección según role
+        if (data.user?.role === "paciente") {
+          navigation.navigate("InicioP");
+        } else if (data.user?.role === "admin") {
+          navigation.navigate("Inicio");
+        } else {
+          alert("Rol no reconocido");
+        }
       } else {
         alert(data.message || "Error en el login");
       }

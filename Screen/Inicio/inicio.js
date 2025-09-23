@@ -49,24 +49,6 @@ export default function Inicio({ navigation }) {
 
       {/* Contenedor que organiza las cards en filas */}
       <View style={styles.cardsContainer}>
-        {/* Recuadro de Citas */}
-        <View style={styles.card}>
-          <Ionicons name="calendar-outline" size={40} color="#63718aff" />
-          <Text style={styles.cardTitle}>Gestión de Citas</Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Citas", { screen: "ListarCitas" })}
-          >
-            <Text style={styles.buttonText}>Ver Citas</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("Citas", { screen: "CrearCita" })}
-          >
-            <Text style={styles.buttonText}>Agendar Cita</Text>
-          </TouchableOpacity>
-        </View>
 
         {/* Recuadro de Médicos */}
         <View style={styles.card}>
@@ -142,7 +124,7 @@ export default function Inicio({ navigation }) {
 
           <TouchableOpacity
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigation.navigate("Consultorios", { screen: "CrearConsultorios" })}
+            onPress={() => navigation.navigate("Consultorios", { screen: "CrearConsultorio" })}
           >
             <Text style={styles.buttonText}>Agregar Consultorio</Text>
           </TouchableOpacity>

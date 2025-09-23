@@ -8,6 +8,8 @@ import CrearEspecialidad from "../../Screen/Especialidades/crearEspecialidad";
 import DetalleEspecialidad from "../../Screen/Especialidades/detalleEspecialidad";
 import EditarEspecialidad from "../../Screen/Especialidades/editarEspecialidad";
 
+import ListarEspecialidadesP from "../../Screen/Especialidades/listarEspecialidadesP";
+
 const Stack = createStackNavigator();
 
 export default function EspecialidadesStack() {
@@ -32,6 +34,11 @@ export default function EspecialidadesStack() {
         name="EditarEspecialidad"
         component={EditarEspecialidad}
         options={{ title: "Editar Especialidad" }}
+      />
+      <Stack.Screen
+        name="ListarEspecialidadesP"
+        component={ListarEspecialidadesP}
+        options={{ title: "Especialidades" }}
       />
 
     </Stack.Navigator>

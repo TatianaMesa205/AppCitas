@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#7e6ea3ff", // rojo bootstrap
+    backgroundColor: "#9b80beff", // color boton
     marginHorizontal: 20,
     paddingVertical: 14,
     borderRadius: 18,

@@ -3,9 +3,9 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import InicioStack from "./Stack/inicioStack";
-import PerfilStack from "./Stack/perfilStack";
-import CitasStack from "./Stack/citasStack";
+import InicioStackP from "./Stack/inicioStackP";
+import PerfilStackP from "./Stack/perfilStack";
+import CitasStackP from "./Stack/citasStackP";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,29 +15,30 @@ export default function Tabs() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Inicio") iconName = "home-outline";
-          else if (route.name === "Citas") iconName = "calendar-outline";
-          else if (route.name === "Perfil") iconName = "person-outline";
+          if (route.name === "InicioP") iconName = "home-outline";
+          else if (route.name === "CitasP") iconName = "calendar-outline";
+          else if (route.name === "PerfilP") iconName = "person-outline";
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#713cd3ff",
+        tabBarActiveTintColor: "#7d3ef3ff",
         tabBarInactiveTintColor: "gray",
       })}
     >
       <Tab.Screen 
-        name="Inicio" 
-        component={InicioStack} 
-        options={{ headerShown: false }} 
+        name="InicioP" 
+        component={InicioStackP} 
+        options={{ headerShown: false, 
+        title: "Inicio de usuario" }} 
       />
       <Tab.Screen 
-        name="Citas" 
-        component={CitasStack} 
+        name="CitasP" 
+        component={CitasStackP} 
         options={{ headerShown: false, 
         title: "Gestión de citas" }} 
       />
       <Tab.Screen 
-        name="Perfil" 
-        component={PerfilStack} 
+        name="PerfilP" 
+        component={PerfilStackP} 
         options={{ headerShown: false, 
         title: "Perfil usuario" }} 
       />

@@ -20,7 +20,7 @@ export default function ListarCitas({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("DetalleCita", { cita: item })}
+            onPress={() => navigation.navigate("DetalleCitaP", { cita: item })}
           >
             <View style={styles.cardContent}>
               <Ionicons
@@ -43,7 +43,7 @@ export default function ListarCitas({ navigation }) {
         ListFooterComponent={() => (
           <TouchableOpacity
             style={styles.addButton}
-            onPress={() => navigation.navigate("CrearCita")}
+            onPress={() => navigation.navigate("CrearCitaP")}
           >
             <Ionicons name="add-circle-outline" size={24} color="#fff" />
             <Text style={styles.addButtonText}>Crear Cita</Text>

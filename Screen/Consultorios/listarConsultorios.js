@@ -1,27 +1,56 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
-const consultorios = [
-  { id: "1", numero: "101", ubicacion: "Primer piso, al lado de recepción" },
-  { id: "2", numero: "204", ubicacion: "Segundo piso, mano derecha al fondo" },
-  { id: "3", numero: "305", ubicacion: "Tercer piso, frente al ascensor" },
-  { id: "4", numero: "112", ubicacion: "Primer piso, pasillo izquierdo" },
-  { id: "5", numero: "410", ubicacion: "Cuarto piso, consultorio de cardiología" },
-  { id: "6", numero: "215", ubicacion: "Segundo piso, junto a laboratorio" },
-  { id: "7", numero: "322", ubicacion: "Tercer piso, esquina del pasillo" },
-  { id: "8", numero: "509", ubicacion: "Quinto piso, área de pediatría" },
-];
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
 export default function ListarConsultorios({ navigation }) {
+  const [consultorios, setConsultorios] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConsultorios = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token"); // 🔑 recuperar token si tu endpoint está protegido
+        const response = await fetch(`${API_BASE_URL}/listarConsultorios`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setConsultorios(data);
+        } else {
+          console.error("Error en la respuesta:", data);
+        }
+      } catch (error) {
+        console.error("Error obteniendo consultorios:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConsultorios();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#706180ff" />
+        <Text style={{ marginTop: 10, color: "#706180ff" }}>Cargando consultorios...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📅 Lista de Consultorios</Text>
+      <Text style={styles.title}>🏥 Lista de Consultorios</Text>
 
       <FlatList
         data={consultorios}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -32,10 +61,10 @@ export default function ListarConsultorios({ navigation }) {
               <Ionicons name="business-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
               <View>
                 <Text style={styles.ubicacion}>{item.ubicacion}</Text>
-                <Text style={styles.numero}>👨‍⚕️ {item.numero}</Text>
+                <Text style={styles.numero}>Consultorio {item.numero}</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="#ffffffff" />
+            <Ionicons name="chevron-forward-outline" size={24} color="#706180ff" />
           </TouchableOpacity>
         )}
       />
@@ -46,7 +75,7 @@ export default function ListarConsultorios({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f0ff", // lila muy suave
+    backgroundColor: "#f8f0ff",
     padding: 20,
   },
   title: {

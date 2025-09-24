@@ -1,73 +1,124 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React, { useEffect, useState } from "react"
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import API_BASE_URL from "../../Src/Config"
 
 export default function DetalleMedico({ route, navigation }) {
-  const { medico } = route.params;
+  const { medico: medicoParam, id: idParam } = route.params || {}
+  const [medico, setMedico] = useState(medicoParam || null)
+  const [loading, setLoading] = useState(!medicoParam)
+
+  useEffect(() => {
+    if (medicoParam) {
+      setLoading(false)
+      return
+    }
+    if (!idParam) {
+      setLoading(false)
+      return
+    }
+
+    const fetchDetalle = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token")
+        const url = `${API_BASE_URL}/medicos/${idParam}`
+        console.log("👉 fetch detalle medico:", url, "token:", !!token)
+        const response = await fetch(url, {
+          headers: {
+            authorization: token ? `bearer ${token}` : "",
+            accept: "application/json",
+          },
+        })
+
+        const text = await response.text()
+        let data
+        try { data = JSON.parse(text) } catch (e) { data = text }
+
+        if (!response.ok) {
+          console.error("Detalle medico - status:", response.status, data)
+        } else {
+          const item = Array.isArray(data) ? data[0] : data
+          setMedico(item || null)
+        }
+      } catch (error) {
+        console.error("error obteniendo medico:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDetalle()
+  }, [medicoParam, idParam])
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0097A7" />
+        <Text style={{ marginTop: 10, color: "#006064" }}>Cargando médico...</Text>
+      </View>
+    )
+  }
+
+  if (!medico) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>No se encontró el médico</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back-outline" size={20} color="white" />
+          <Text style={styles.buttonText}>Regresar</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>👨‍⚕️ Detalle del medico</Text>
+      <Text style={styles.title}>Detalle del médico</Text>
 
       <View style={styles.card}>
-
         <View style={styles.row}>
-            <Ionicons name="medkit-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Especialidad: {medico.idEspecialidad}</Text>
+          <Ionicons name="person-outline" size={24} color="#0097A7" />
+          <Text style={styles.info}>Nombre: {medico.nombre_m} {medico.apellido_m}</Text>
         </View>
 
         <View style={styles.row}>
-            <Ionicons name="person-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Nombre: {medico.nombreM}</Text>
+          <Ionicons name="medical-outline" size={24} color="#0097A7" />
+          <Text style={styles.info}>
+            Especialidad: {medico.especialidades?.nombre_e || "sin especialidad"}
+          </Text>
         </View>
 
         <View style={styles.row}>
-            <Ionicons name="people-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Apellido: {medico.apellidoM}</Text>
+          <Ionicons name="hourglass-outline" size={24} color="#0097A7" />
+          <Text style={styles.info}>Edad: {medico.edad}</Text>
         </View>
 
         <View style={styles.row}>
-            <Ionicons name="hourglass-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Edad: {medico.edad}</Text>
-        </View>
-
-        <View style={styles.row}>
-            <Ionicons name="call-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Teléfono: {medico.telefono}</Text>
+          <Ionicons name="call-outline" size={24} color="#0097A7" />
+          <Text style={styles.info}>Teléfono: {medico.telefono}</Text>
         </View>
       </View>
 
-      {/* Botón editar */}
       <TouchableOpacity
         style={[styles.button, styles.editButton]}
-        onPress={() => navigation.navigate("EditarMedico")}
+        onPress={() => navigation.navigate("EditarMedico", { medico })}
       >
         <Ionicons name="create-outline" size={20} color="white" />
-        <Text style={styles.buttonText}>Editar medico</Text>
+        <Text style={styles.buttonText}>Editar médico</Text>
       </TouchableOpacity>
 
-      {/* Botón regresar */}
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={20} color="white" />
         <Text style={styles.buttonText}>Regresar</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#E0F7FA", 
-    padding: 20 
-  },
-  title: { 
-    fontSize: 24, 
-    fontWeight: "bold", 
-    marginBottom: 20, 
-    textAlign: "center", 
-    color: "#006064" 
-  },
+  container: { flex: 1, backgroundColor: "#E0F7FA", padding: 20 },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center", color: "#006064" },
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 15,
@@ -79,33 +130,18 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 20,
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  info: {
-    fontSize: 16,
-    marginLeft: 10,
-    color: "#004D40", 
-  },
+  row: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
+  info: { fontSize: 16, marginLeft: 10, color: "#004D40" },
   button: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0097A7", 
+    backgroundColor: "#0097A7",
     paddingVertical: 12,
     borderRadius: 25,
     elevation: 3,
     marginTop: 12,
   },
-  editButton: {
-    backgroundColor: "#6fbeb4ff", 
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 6,
-  },
-});
+  editButton: { backgroundColor: "#6fbeb4ff" },
+  buttonText: { color: "white", fontSize: 16, fontWeight: "600", marginLeft: 6 },
+})

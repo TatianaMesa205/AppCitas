@@ -3,154 +3,157 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "reac
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../../Src/Config";
 
-
 export default function CrearConsultorio({ navigation }) {
   const [numero, setNumero] = useState("");
   const [ubicacion, setUbicacion] = useState("");
 
-const handleCrear = async () => {
-  if (!numero || !ubicacion) {
-    Alert.alert("⚠️ Error", "Por favor completa todos los campos");
-    return;
-  }
-
-  try {
-    // recuperar token y role desde AsyncStorage
-    const token = await AsyncStorage.getItem("token");
-    const role = await AsyncStorage.getItem("role"); // si lo guardaste al loguear
-
-    console.log("DEBUG crearConsultorio -> token:", token, "role:", role);
-
-    if (!token) {
-      Alert.alert("No autenticado", "Debes iniciar sesión para crear consultorios");
-      navigation.navigate("Login");
+  const handleCrear = async () => {
+    if (!numero || !ubicacion) {
+      Alert.alert("⚠️ Error", "Por favor completa todos los campos");
       return;
     }
 
-    // Si tu ruta está protegida por RoleMiddleware:admin, valida el role en el cliente
-    if (role !== "admin") {
-      Alert.alert("Permisos insuficientes", "Solo usuarios con rol 'admin' pueden crear consultorios");
-      return;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/crearConsultorios`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`, // <-- token necesario
-      },
-      body: JSON.stringify({
-        numero: numero,
-        ubicacion: ubicacion,
-      }),
-    });
-
-    const status = response.status;
-    // intenta parsear json, si no es json, toma texto
-    let body;
     try {
-      body = await response.json();
-    } catch (e) {
-      body = await response.text();
+      const token = await AsyncStorage.getItem("token");
+      const role = await AsyncStorage.getItem("role");
+
+      if (!token) {
+        Alert.alert("No autenticado", "Debes iniciar sesión para crear consultorios");
+        navigation.navigate("Login");
+        return;
+      }
+
+      if (role !== "admin") {
+        Alert.alert("Permisos insuficientes", "Solo usuarios con rol 'admin' pueden crear consultorios");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/crearConsultorios`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          numero,
+          ubicacion,
+        }),
+      });
+
+      const status = response.status;
+      let body;
+      try {
+        body = await response.json();
+      } catch {
+        body = await response.text();
+      }
+
+      if (response.ok) {
+        Alert.alert("✅ Éxito", body?.message || "Consultorio creado correctamente");
+        navigation.navigate("ListarConsultorios");
+        return;
+      }
+
+      if (status === 401) {
+        Alert.alert("No autorizado", "Token inválido o expirado. Inicia sesión nuevamente.");
+        navigation.navigate("Login");
+        return;
+      }
+
+      if (status === 403) {
+        Alert.alert("Prohibido", body?.message || "No tienes permiso para realizar esta acción.");
+        return;
+      }
+
+      Alert.alert("Error", body?.message || "No se pudo crear el consultorio");
+    } catch (error) {
+      console.error("🚨 Error de conexión:", error);
+      Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
     }
-
-    if (response.ok) {
-      Alert.alert("✅ Éxito", (body && body.message) || "Consultorio creado correctamente");
-      navigation.navigate("ListarConsultorios");
-      return;
-    }
-
-    // manejo detallado de errores
-    if (status === 401) {
-      console.error("401 ->", body);
-      Alert.alert("No autorizado", "Token inválido o expirado. Inicia sesión nuevamente.");
-      navigation.navigate("Login");
-      return;
-    }
-
-    if (status === 403) {
-      console.error("403 ->", body);
-      Alert.alert("Prohibido", (body && body.message) || "No tienes permiso para realizar esta acción.");
-      return;
-    }
-
-    // cualquier otro error
-    console.error("Error crearConsultorios:", status, body);
-    Alert.alert("Error", (body && body.message) || "No se pudo crear el consultorio");
-  } catch (error) {
-    console.error("🚨 Error de conexión:", error);
-    Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
-  }
-};
-
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar nuevo consultorio</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Número del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={numero}
-        onChangeText={setNumero}
-        keyboardType="numeric"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Ubicación del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={ubicacion}
-        onChangeText={setUbicacion}
-      />
-      
-      <TouchableOpacity style={styles.button} onPress={handleCrear}>
-        <Text style={styles.buttonText}>Crear Consultorio</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <Text style={styles.title}>➕ Nuevo Consultorio</Text>
+
+        <Text style={styles.label}>Número</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: 101"
+          placeholderTextColor="#b0b0b0"
+          value={numero}
+          onChangeText={setNumero}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>Ubicación</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: Piso 2 - Ala B"
+          placeholderTextColor="#b0b0b0"
+          value={ubicacion}
+          onChangeText={setUbicacion}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleCrear}>
+          <Text style={styles.buttonText}>Crear Consultorio</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#f8dfebff", 
-    alignItems: "stretch", 
+  container: {
+    flex: 1,
+    backgroundColor: "#f3e9f7", // suave pastel
+    justifyContent: "center",
+    padding: 20,
   },
-  title: { 
-    fontSize: 24, 
-    marginBottom: 20, 
-    textAlign: "center", 
-    fontWeight: "bold", 
-    color: "#db86cdff" 
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#9b59b6",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+    color: "#444",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ffb1ebff", 
+    borderColor: "#d1b3ff",
     padding: 12,
-    marginVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    color: "#a96b6bff", 
+    marginBottom: 15,
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    color: "#333",
   },
   button: {
-    backgroundColor: "#ffacf4ff", 
+    backgroundColor: "#a564d3",
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    marginTop: 10,
   },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

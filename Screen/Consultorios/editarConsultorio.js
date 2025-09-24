@@ -1,115 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../../Src/Config";
 
 export default function EditarConsultorio({ route, navigation }) {
-  const { id, numeroInicial, ubicacionInicial } = route.params; // 📌 datos enviados desde ListarConsultorios
+  const { id, numeroInicial, ubicacionInicial } = route.params;
   const [numero, setNumero] = useState(numeroInicial || "");
   const [ubicacion, setUbicacion] = useState(ubicacionInicial || "");
 
   const handleEditar = async () => {
-  console.log("🟢 ID recibido:", id);
-  console.log("🟢 Endpoint:", `${API_BASE_URL}/actualizarConsultorios/${id}`);
-
-  if (!numero || !ubicacion) {
-    Alert.alert("⚠️ Error", "Por favor completa todos los campos");
-    return;
-  }
-
-  try {
-    const token = await AsyncStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/actualizarConsultorios/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ numero, ubicacion }),
-    });
-
-    console.log("🔵 Status:", response.status);
-
-    if (response.ok) {
-      Alert.alert("✅ Éxito", "Consultorio editado correctamente");
-      navigation.navigate("ListarConsultorios", { reload: true });
-    } else {
-      const errorData = await response.json();
-      console.log("❌ Error en backend:", errorData);
-      Alert.alert("❌ Error", "No se pudo editar el consultorio");
+    if (!numero || !ubicacion) {
+      Alert.alert("⚠️ Error", "Por favor completa todos los campos");
+      return;
     }
-  } catch (error) {
-    console.error("🚨 Error de conexión:", error);
-    Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
-  }
-};
 
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/actualizarConsultorios/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ numero, ubicacion }),
+      });
+
+      if (response.ok) {
+        Alert.alert("✅ Éxito", "Consultorio editado correctamente");
+        navigation.navigate("ListarConsultorios", { reload: true });
+      } else {
+        const errorData = await response.json();
+        console.log("❌ Error en backend:", errorData);
+        Alert.alert("❌ Error", "No se pudo editar el consultorio");
+      }
+    } catch (error) {
+      console.error("🚨 Error de conexión:", error);
+      Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Editar consultorio</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>✏️ Editar Consultorio</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Número del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={numero}
-        onChangeText={setNumero}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ubicación del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={ubicacion}
-        onChangeText={setUbicacion}
-      />
+        <Text style={styles.label}>Número</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Número del consultorio"
+          placeholderTextColor="#b0b0b0"
+          value={numero}
+          onChangeText={setNumero}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleEditar}>
-        <Text style={styles.buttonText}>Confirmar edición</Text>
-      </TouchableOpacity>
+        <Text style={styles.label}>Ubicación</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ubicación del consultorio"
+          placeholderTextColor="#b0b0b0"
+          value={ubicacion}
+          onChangeText={setUbicacion}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={handleEditar}>
+          <Text style={styles.buttonText}>Guardar Cambios</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#fff4e6",
-    alignItems: "stretch", 
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f0e6", // beige
+    justifyContent: "center",
+    padding: 20,
   },
-  title: { 
-    fontSize: 24, 
-    marginBottom: 20, 
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#a67c52",
     textAlign: "center",
-    fontWeight: "bold", 
-    color: "#ffb97bff" 
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+    color: "#444",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#f4a261",
+    borderColor: "#d4b483",
     padding: 12,
-    marginVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    color: "#fbb565ff", 
+    marginBottom: 15,
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    color: "#333",
   },
   button: {
-    backgroundColor: "#ffaa95ff",
+    backgroundColor: "#a67c52",
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    marginTop: 15,
   },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

@@ -1,25 +1,62 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
-
-const medicos = [
-  { id: "1", idEspecialidad: "Maternidad", nombreM: "Adriana", apellidoM: "Gonzales", edad: "36", telefono: "3142301295" },
-  { id: "2", idEspecialidad: "Pediatría", nombreM: "Carlos", apellidoM: "Ramírez", edad: "42", telefono: "3124567890" },
-  { id: "3", idEspecialidad: "Cardiología", nombreM: "Luisa", apellidoM: "Fernández", edad: "39", telefono: "3209876543" },
-  { id: "4", idEspecialidad: "Odontología", nombreM: "Jorge", apellidoM: "Martínez", edad: "45", telefono: "3001122334" },
-  { id: "5", idEspecialidad: "Dermatología", nombreM: "Mariana", apellidoM: "López", edad: "33", telefono: "3015566778" },
-  { id: "6", idEspecialidad: "Oftalmología", nombreM: "Andrés", apellidoM: "Castro", edad: "50", telefono: "3157788990" },
-];
-
+import React, { useEffect, useState } from "react"
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import API_BASE_URL from "../../Src/Config"
 
 export default function ListarMedicos({ navigation }) {
+  const [medicos, setMedicos] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchMedicos = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token")
+        const url = `${API_BASE_URL}/listarMedicos`
+        console.log("👉 fetch listar medicos:", url, "token:", !!token)
+
+        const response = await fetch(url, {
+          headers: {
+            authorization: token ? `bearer ${token}` : "",
+            accept: "application/json",
+          },
+        })
+
+        const text = await response.text()
+        let data
+        try { data = JSON.parse(text) } catch (e) { data = text }
+
+        if (!response.ok) {
+          console.error("listar medicos - status:", response.status, data)
+        } else {
+          setMedicos(Array.isArray(data) ? data : [])
+        }
+      } catch (error) {
+        console.error("error obteniendo medicos:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMedicos()
+  }, [])
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#9c27b0" />
+        <Text style={{ marginTop: 10, color: "#6a0080" }}>Cargando médicos...</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📅 Lista de medicos</Text>
+      <Text style={styles.title}>📅 Lista de médicos</Text>
 
       <FlatList
         data={medicos}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -29,7 +66,9 @@ export default function ListarMedicos({ navigation }) {
             <View style={styles.cardContent}>
               <Ionicons name="people-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
               <View>
-                <Text style={styles.nombreM}>{item.nombreM + " " + item.apellidoM} - {item.idEspecialidad}</Text>
+                <Text style={styles.nombreM}>
+                  {item.nombre_m + " " + item.apellido_m} - {item.especialidades?.nombre_e || "sin especialidad"}
+                </Text>
                 <Text style={styles.telefono}>📞 {item.telefono}</Text>
               </View>
             </View>
@@ -38,13 +77,13 @@ export default function ListarMedicos({ navigation }) {
         )}
       />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f0ff", // lila muy suave
+    backgroundColor: "#f8f0ff",
     padding: 20,
   },
   title: {
@@ -84,4 +123,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#675285ff",
   },
-});
+})

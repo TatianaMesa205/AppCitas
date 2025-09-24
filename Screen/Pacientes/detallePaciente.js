@@ -38,7 +38,7 @@ export default function DetallePaciente({ route, navigation }) {
 
         <View style={styles.row}>
             <Ionicons name="calendar-outline" size={24} color="#0097A7" />
-            <Text style={styles.info}>Fecha de nacimiento: {paciente.fechaNacimiento}</Text>
+            <Text style={styles.info}>Fecha de nacimiento: {paciente.fecha_nacimiento}</Text>
         </View>
 
         <View style={styles.row}>
@@ -54,7 +54,7 @@ export default function DetallePaciente({ route, navigation }) {
       {/* Botón editar */}
       <TouchableOpacity
         style={[styles.button, styles.editButton]}
-        onPress={() => navigation.navigate("EditarPaciente")}
+        onPress={() => navigation.navigate("EditarPaciente", { paciente })}
       >
         <Ionicons name="create-outline" size={20} color="white" />
         <Text style={styles.buttonText}>Editar paciente</Text>

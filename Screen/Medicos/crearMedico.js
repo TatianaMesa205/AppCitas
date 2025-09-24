@@ -1,156 +1,247 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import API_BASE_URL from "../../Src/Config";
+import React, { useEffect, useState } from "react"
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import API_BASE_URL from "../../Src/Config"
 
+export default function CrearMedico({ navigation }) {
+  const [especialidades, setEspecialidades] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [idEspecialidad, setIdEspecialidad] = useState("")
+  const [especialidadModalVisible, setEspecialidadModalVisible] = useState(false)
 
-export default function CrearConsultorio({ navigation }) {
-  const [numero, setNumero] = useState("");
-  const [ubicacion, setUbicacion] = useState("");
+  const [nombreM, setNombreM] = useState("")
+  const [apellidoM, setApellidoM] = useState("")
+  const [edad, setEdad] = useState("")
+  const [telefono, setTelefono] = useState("")
 
-const handleCrear = async () => {
-  if (!numero || !ubicacion) {
-    Alert.alert("⚠️ Error", "Por favor completa todos los campos");
-    return;
-  }
+  useEffect(() => {
+    const fetchEspecialidades = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token")
+        const response = await fetch(`${API_BASE_URL}/listarEspecialidades`, {
+          headers: { accept: "application/json", authorization: `Bearer ${token}` },
+        })
+        const data = await response.json()
+        setEspecialidades(data)
+      } catch (error) {
+        console.error("Error cargando especialidades:", error)
+        Alert.alert("Error", "No se pudieron cargar las especialidades")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEspecialidades()
+  }, [])
 
-  try {
-    // recuperar token y role desde AsyncStorage
-    const token = await AsyncStorage.getItem("token");
-    const role = await AsyncStorage.getItem("role"); // si lo guardaste al loguear
-
-    console.log("DEBUG crearConsultorio -> token:", token, "role:", role);
-
-    if (!token) {
-      Alert.alert("No autenticado", "Debes iniciar sesión para crear consultorios");
-      navigation.navigate("Login");
-      return;
+  const handleCrear = async () => {
+    if (!idEspecialidad || !nombreM || !apellidoM || !edad || !telefono) {
+      Alert.alert("⚠️ Error", "Por favor completa todos los campos")
+      return
     }
 
-    // Si tu ruta está protegida por RoleMiddleware:admin, valida el role en el cliente
-    if (role !== "admin") {
-      Alert.alert("Permisos insuficientes", "Solo usuarios con rol 'admin' pueden crear consultorios");
-      return;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/crearConsultorios`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`, // <-- token necesario
-      },
-      body: JSON.stringify({
-        numero: numero,
-        ubicacion: ubicacion,
-      }),
-    });
-
-    const status = response.status;
-    // intenta parsear json, si no es json, toma texto
-    let body;
     try {
-      body = await response.json();
-    } catch (e) {
-      body = await response.text();
-    }
+      const token = await AsyncStorage.getItem("token")
+      const role = await AsyncStorage.getItem("role")
 
-    if (response.ok) {
-      Alert.alert("✅ Éxito", (body && body.message) || "Consultorio creado correctamente");
-      navigation.navigate("ListarConsultorios");
-      return;
-    }
+      if (!token) {
+        Alert.alert("No autenticado", "Debes iniciar sesión para crear médicos")
+        navigation.navigate("Login")
+        return
+      }
 
-    // manejo detallado de errores
-    if (status === 401) {
-      console.error("401 ->", body);
-      Alert.alert("No autorizado", "Token inválido o expirado. Inicia sesión nuevamente.");
-      navigation.navigate("Login");
-      return;
-    }
+      if (role !== "admin") {
+        Alert.alert("Permisos insuficientes", "Solo usuarios con rol 'admin' pueden crear médicos")
+        return
+      }
 
-    if (status === 403) {
-      console.error("403 ->", body);
-      Alert.alert("Prohibido", (body && body.message) || "No tienes permiso para realizar esta acción.");
-      return;
-    }
+      const response = await fetch(`${API_BASE_URL}/crearMedicos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_especialidades: idEspecialidad,
+          nombre_m: nombreM,
+          apellido_m: apellidoM,
+          edad,
+          telefono,
+        }),
+      })
 
-    // cualquier otro error
-    console.error("Error crearConsultorios:", status, body);
-    Alert.alert("Error", (body && body.message) || "No se pudo crear el consultorio");
-  } catch (error) {
-    console.error("🚨 Error de conexión:", error);
-    Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor");
+      const body = await response.json()
+      if (response.ok) {
+        Alert.alert("✅ Médico creado correctamente")
+        navigation.navigate("ListarMedicos")
+      } else {
+        Alert.alert("Error", body.message || "No se pudo crear el médico")
+      }
+    } catch (error) {
+      console.error("🚨 Error de conexión:", error)
+      Alert.alert("🚨 Error", "Ocurrió un error al conectar con el servidor")
+    }
   }
-};
 
+  if (loading) return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" color="#9b59b6" />
+      <Text style={{ marginTop: 10 }}>Cargando especialidades...</Text>
+    </View>
+  )
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar nuevo consultorio</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Número del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={numero}
-        onChangeText={setNumero}
-        keyboardType="numeric"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Ubicación del consultorio"
-        placeholderTextColor="#8e9aaf"
-        value={ubicacion}
-        onChangeText={setUbicacion}
-      />
-      
-      <TouchableOpacity style={styles.button} onPress={handleCrear}>
-        <Text style={styles.buttonText}>Crear Consultorio</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <Text style={styles.title}>➕ Nuevo Médico</Text>
+
+        {/* Especialidad */}
+        <Text style={styles.label}>Especialidad</Text>
+        <TouchableOpacity style={styles.selectButton} onPress={() => setEspecialidadModalVisible(true)}>
+          <Text style={styles.selectText}>
+            {idEspecialidad
+              ? especialidades.find((e) => e.id === idEspecialidad)?.nombre_e
+              : "Selecciona una especialidad"}
+          </Text>
+          <Ionicons name="chevron-down" size={20} color="#9b59b6" />
+        </TouchableOpacity>
+
+        {/* Nombre */}
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: Juan"
+          value={nombreM}
+          onChangeText={setNombreM}
+        />
+
+        {/* Apellido */}
+        <Text style={styles.label}>Apellido</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: Pérez"
+          value={apellidoM}
+          onChangeText={setApellidoM}
+        />
+
+        {/* Edad */}
+        <Text style={styles.label}>Edad</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: 40"
+          value={edad}
+          onChangeText={setEdad}
+          keyboardType="numeric"
+        />
+
+        {/* Teléfono */}
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Ej: 3001234567"
+          value={telefono}
+          onChangeText={setTelefono}
+          keyboardType="phone-pad"
+        />
+
+        {/* Botón */}
+        <TouchableOpacity style={styles.button} onPress={handleCrear}>
+          <Text style={styles.buttonText}>Crear Médico</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Modal de especialidades */}
+      <Modal transparent visible={especialidadModalVisible} animationType="fade" onRequestClose={() => setEspecialidadModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <FlatList
+              data={especialidades}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.option}
+                  onPress={() => {
+                    setIdEspecialidad(item.id)
+                    setEspecialidadModalVisible(false)
+                  }}
+                >
+                  <Text style={styles.optionText}>{item.nombre_e}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#f8dfebff", 
-    alignItems: "stretch", 
+  container: {
+    flex: 1,
+    backgroundColor: "#f3e9f7",
+    justifyContent: "center",
+    padding: 20,
   },
-  title: { 
-    fontSize: 24, 
-    marginBottom: 20, 
-    textAlign: "center", 
-    fontWeight: "bold", 
-    color: "#db86cdff" 
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
   },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#9b59b6",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+    color: "#444",
+  },
+  selectButton: {
+    borderWidth: 1,
+    borderColor: "#d1b3ff",
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 15,
+    backgroundColor: "#fafafa",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  selectText: { fontSize: 16, color: "#333" },
   input: {
     borderWidth: 1,
-    borderColor: "#ffb1ebff", 
+    borderColor: "#d1b3ff",
     padding: 12,
-    marginVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    color: "#a96b6bff", 
+    marginBottom: 15,
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    color: "#333",
   },
   button: {
-    backgroundColor: "#ffacf4ff", 
+    backgroundColor: "#a564d3",
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    marginTop: 10,
   },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
-});
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" },
+  modalContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 20, width: "80%" },
+  option: { padding: 12, borderBottomWidth: 1, borderBottomColor: "#eee" },
+  optionText: { fontSize: 16, color: "#5e0066" },
+})

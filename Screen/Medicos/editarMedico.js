@@ -1,105 +1,243 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList, ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
-export default function EditarMedico({ navigation }) {
-  const [idEspecialidad, setIdEspecialidad] = useState("");
-  const [nombreM, setNombreM] = useState("");
-  const [apellidoM, setApellidoM] = useState("");
-  const [edad, setEdad] = useState("");
-  const [telefono, setTelefono] = useState("");
+export default function EditarMedico({ route, navigation }) {
+  const { medico } = route.params;
 
-  const handleEditar = () => {
-    if (idEspecialidad && nombreM && apellidoM && edad && telefono) {
-      alert("✅ Medico creado (simulado)");
-      navigation.navigate("ListarMedicos");
-    } else {
-      alert("Por favor completa todos los campos");
+  const [especialidades, setEspecialidades] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [idEspecialidad, setIdEspecialidad] = useState(medico?.id_especialidades || "");
+  const [nombreM, setNombreM] = useState(medico?.nombre_m || "");
+  const [apellidoM, setApellidoM] = useState(medico?.apellido_m || "");
+  const [edad, setEdad] = useState(medico?.edad?.toString() || "");
+  const [telefono, setTelefono] = useState(medico?.telefono || "");
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchEspecialidades = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const response = await fetch(`${API_BASE_URL}/listarEspecialidades`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setEspecialidades(data);
+      } catch (error) {
+        console.error("Error cargando especialidades", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEspecialidades();
+  }, []);
+
+  const handleUpdate = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/actualizarMedicos/${medico.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_especialidades: idEspecialidad,
+          nombre_m: nombreM,
+          apellido_m: apellidoM,
+          edad,
+          telefono,
+        }),
+      });
+      if (response.ok) {
+        alert("✅ Médico actualizado correctamente");
+        navigation.navigate("ListarMedicos", { reload: true });
+      } else {
+        alert("❌ Error al actualizar médico");
+      }
+    } catch (error) {
+      console.error("Error en la actualización", error);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#a67c52" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar nuevo medico</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese el id de la especialidad"
-        placeholderTextColor="#8e9aaf"
-        value={idEspecialidad}
-        onChangeText={setIdEspecialidad}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese el nombre del medico"
-        placeholderTextColor="#8e9aaf"
-        value={nombreM}
-        onChangeText={setNombreM}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese el apellido"
-        placeholderTextColor="#8e9aaf"
-        value={apellidoM}
-        onChangeText={setApellidoM}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese la edad"
-        placeholderTextColor="#8e9aaf"
-        value={edad}
-        onChangeText={setEdad}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese el teléfono"
-        placeholderTextColor="#8e9aaf"
-        value={telefono}
-        onChangeText={setTelefono}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleEditar}>
-        <Text style={styles.buttonText}>Editar Medico</Text>
-      </TouchableOpacity>
+      <View style={styles.card}>
+        <Text style={styles.title}>✏️ Editar Médico</Text>
+
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          value={nombreM}
+          onChangeText={setNombreM}
+          placeholder="Nombre del médico"
+          placeholderTextColor="#b0b0b0"
+        />
+
+        <Text style={styles.label}>Apellido</Text>
+        <TextInput
+          style={styles.input}
+          value={apellidoM}
+          onChangeText={setApellidoM}
+          placeholder="Apellido del médico"
+          placeholderTextColor="#b0b0b0"
+        />
+
+        <Text style={styles.label}>Edad</Text>
+        <TextInput
+          style={styles.input}
+          value={edad}
+          onChangeText={setEdad}
+          placeholder="Edad"
+          placeholderTextColor="#b0b0b0"
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.label}>Teléfono</Text>
+        <TextInput
+          style={styles.input}
+          value={telefono}
+          onChangeText={setTelefono}
+          placeholder="Teléfono"
+          placeholderTextColor="#b0b0b0"
+          keyboardType="phone-pad"
+        />
+
+        <Text style={styles.label}>Especialidad</Text>
+        <TouchableOpacity style={styles.input} onPress={() => setModalVisible(true)}>
+          <Text style={{ color: idEspecialidad ? "#333" : "#b0b0b0" }}>
+            {idEspecialidad
+              ? especialidades.find((e) => e.id === idEspecialidad)?.nombre_e || "Seleccionar Especialidad"
+              : "Seleccionar Especialidad"}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Modal Especialidades */}
+        <Modal transparent={true} visible={modalVisible} animationType="fade" onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Selecciona la Especialidad</Text>
+              <FlatList
+                data={especialidades}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.option}
+                    onPress={() => {
+                      setIdEspecialidad(item.id);
+                      setModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.optionText}>{item.nombre_e}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <Text style={styles.buttonText}>Guardar Cambios</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: "#fff4e6",
-    alignItems: "stretch", 
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f0e6", // beige
+    justifyContent: "center",
+    padding: 20,
   },
-  title: { 
-    fontSize: 24, 
-    marginBottom: 20, 
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#a67c52",
     textAlign: "center",
-    fontWeight: "bold", 
-    color: "#ffb97bff" 
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 5,
+    color: "#444",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#f4a261",
+    borderColor: "#d4b483",
     padding: 12,
-    marginVertical: 6,
-    borderRadius: 10,
-    backgroundColor: "#ffffff",
-    color: "#fbb565ff", 
+    marginBottom: 15,
+    borderRadius: 12,
+    backgroundColor: "#fafafa",
+    color: "#333",
   },
   button: {
-    backgroundColor: "#ffaa95ff",
+    backgroundColor: "#a67c52",
     padding: 15,
-    borderRadius: 25,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    marginTop: 15,
   },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 20,
+    width: "80%",
+    elevation: 6,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#a67c52",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  option: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    alignItems: "flex-start",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,9 +1,47 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function DetallePaciente({ route, navigation }) {
   const { paciente } = route.params;
+
+  const handleEliminar = async () => {
+  Alert.alert(
+    "Confirmar eliminación",
+    "¿Seguro que deseas eliminar este paciente?",
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const token = await AsyncStorage.getItem("token");
+            const response = await fetch(`${API_BASE_URL}/eliminarPacientes/${especialidades.id}`, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            });
+
+            if (response.ok) {
+              Alert.alert("Éxito", "El paciente ha sido eliminado");
+              navigation.navigate("ListarPacientes");
+            } else {
+              const err = await response.json();
+              Alert.alert("Error", err.message || "No se pudo eliminar el medico");
+            }
+          } catch (error) {
+            console.error("Error eliminando especialidad:", error);
+            Alert.alert("Error", "Ocurrió un problema al eliminar el medico");
+          }
+        },
+      },
+    ]
+  );
+};
+
 
   return (
     <View style={styles.container}>
@@ -60,6 +98,15 @@ export default function DetallePaciente({ route, navigation }) {
         <Text style={styles.buttonText}>Editar paciente</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[styles.button, styles.deleteButton]}
+        onPress={handleEliminar}
+      >
+        <Ionicons name="trash-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Eliminar especialidad</Text>
+      </TouchableOpacity>
+
+
       {/* Botón regresar */}
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={20} color="white" />
@@ -114,7 +161,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   editButton: {
-    backgroundColor: "#6fbeb4ff", 
+    backgroundColor: "#c2b485ff", 
   },
   buttonText: {
     color: "white",
@@ -122,4 +169,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginLeft: 6,
   },
+  deleteButton: { backgroundColor: "#e57373" },
+
 });

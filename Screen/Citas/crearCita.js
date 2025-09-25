@@ -18,6 +18,7 @@ export default function CrearCita({ navigation }) {
   const [hora, setHora] = useState("")
   const [motivo, setMotivo] = useState("")
   const [estado, setEstado] = useState("pendiente")
+  const [showtimepicker, setshowtimepicker] = useState(false);
 
   const [modalPacienteVisible, setModalPacienteVisible] = useState(false)
   const [modalMedicoVisible, setModalMedicoVisible] = useState(false)
@@ -93,6 +94,23 @@ export default function CrearCita({ navigation }) {
     if (selectedDate) setFecha(selectedDate.toISOString().split("T")[0])
   }
 
+  const handletimechange = (event, selectedtime) => {
+    setshowtimepicker(false)
+    if (selectedtime) {
+      const hh = String(selectedtime.getHours()).padStart(2, "0")
+      const mm = String(selectedtime.getMinutes()).padStart(2, "0")
+      setHora(`${hh}:${mm}`)
+    }
+  }
+
+  const timevalue = hora ? (() => {
+    const [h,m] = hora.split(":").map(Number)
+    const d = new Date()
+    d.setHours(h, m, 0, 0)
+    return d
+  })() : new Date()
+
+
   if (loading) return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color="#9b59b6" />
@@ -148,12 +166,18 @@ export default function CrearCita({ navigation }) {
 
         {/* Hora */}
         <Text style={styles.label}>Hora</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Ej: 14:30"
-          value={hora}
-          onChangeText={setHora}
-        />
+        <TouchableOpacity style={styles.input} onPress={() => setshowtimepicker(true)}>
+          <Text style={{color: hora ? "#333" : "#aaa"}}>{hora || "Selecciona una hora"}</Text>
+        </TouchableOpacity>
+        {showtimepicker && (
+          <DateTimePicker
+            value={timevalue}
+            mode="time"
+            is24Hour={true}
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={handletimechange}
+          />
+        )}
 
         {/* Motivo */}
         <Text style={styles.label}>Motivo</Text>

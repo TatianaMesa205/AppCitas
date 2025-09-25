@@ -1,55 +1,102 @@
-import React from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React, { useEffect, useState } from "react"
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import API_BASE_URL from "../../Src/Config"
 
-const medicos = [
-  { id: "1", idEspecialidad: "Maternidad", nombreM: "Adriana", apellidoM: "Gonzales", edad: "36", telefono: "3142301295" },
-  { id: "2", idEspecialidad: "Pediatría", nombreM: "Carlos", apellidoM: "Ramírez", edad: "42", telefono: "3124567890" },
-  { id: "3", idEspecialidad: "Cardiología", nombreM: "Luisa", apellidoM: "Fernández", edad: "39", telefono: "3209876543" },
-  { id: "4", idEspecialidad: "Odontología", nombreM: "Jorge", apellidoM: "Martínez", edad: "45", telefono: "3001122334" },
-  { id: "5", idEspecialidad: "Dermatología", nombreM: "Mariana", apellidoM: "López", edad: "33", telefono: "3015566778" },
-  { id: "6", idEspecialidad: "Oftalmología", nombreM: "Andrés", apellidoM: "Castro", edad: "50", telefono: "3157788990" },
-];
+export default function ListarMedicos() {
+  const [medicos, setMedicos] = useState([])
+  const [loading, setLoading] = useState(true)
 
+  useEffect(() => {
+    const fetchMedicos = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token")
+        const url = `${API_BASE_URL}/listarMedicos`
+        console.log("👉 fetch listar medicos:", url, "token:", !!token)
 
-export default function ListarMedicos({ navigation }) {
+        const response = await fetch(url, {
+          headers: {
+            authorization: token ? `bearer ${token}` : "",
+            accept: "application/json",
+          },
+        })
+
+        const text = await response.text()
+        let data
+        try { data = JSON.parse(text) } catch (e) { data = text }
+
+        if (!response.ok) {
+          console.error("listar medicos - status:", response.status, data)
+        } else {
+          setMedicos(Array.isArray(data) ? data : [])
+        }
+      } catch (error) {
+        console.error("error obteniendo medicos:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMedicos()
+  }, [])
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#9c27b0" />
+        <Text style={{ marginTop: 10, color: "#6a0080" }}>Cargando médicos...</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📅 Lista de medicos</Text>
+      <Text style={styles.title}>📋 Lista de médicos</Text>
 
       <FlatList
         data={medicos}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-          >
+          <View style={styles.card}>
             <View style={styles.cardContent}>
-              <Ionicons name="people-outline" size={28} color="#b2a3c0ff" style={{ marginRight: 10 }} />
+              <Ionicons name="person-circle-outline" size={40} color="#8e24aa" style={{ marginRight: 12 }} />
               <View>
-                <Text style={styles.nombreM}>{item.nombreM + " " + item.apellidoM} - {item.idEspecialidad}</Text>
-                <Text style={styles.telefono}>📞 {item.telefono}</Text>
+                <Text style={styles.nombreM}>
+                  {item.nombre_m} {item.apellido_m}
+                </Text>
+                <View style={styles.infoRow}>
+                  <Ionicons name="medkit-outline" size={18} color="#6a0080" />
+                  <Text style={styles.infoText}> {item.especialidades?.nombre_e || "Sin especialidad"}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Ionicons name="calendar-outline" size={18} color="#6a0080" />
+                  <Text style={styles.infoText}> {item.edad} años</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Ionicons name="call-outline" size={18} color="#6a0080" />
+                  <Text style={styles.infoText}> {item.telefono}</Text>
+                </View>
               </View>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="#ffffffff" />
-          </TouchableOpacity>
+          </View>
         )}
       />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f0ff", // lila muy suave
+    backgroundColor: "#f8f0ff",
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#706180ff",
+    color: "#706180",
     marginBottom: 15,
     textAlign: "center",
   },
@@ -63,7 +110,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
@@ -72,15 +118,22 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   nombreM: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#776985ff",
+    color: "#4a148c",
+    marginBottom: 5,
   },
-  telefono: {
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  infoText: {
     fontSize: 14,
-    color: "#675285ff",
+    color: "#5e35b1",
+    marginLeft: 5,
   },
-});
+})

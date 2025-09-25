@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../../Src/Config";
@@ -55,6 +55,43 @@ export default function DetalleConsultorio({ route, navigation }) {
     fetchDetalle();
   }, [consultorioParam, idParam]);
 
+  const handleEliminar = async () => {
+    Alert.alert(
+      "Confirmar eliminación",
+      "¿Seguro que deseas eliminar este consultorio?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("token");
+              const response = await fetch(`${API_BASE_URL}/eliminarConsultorios/${consultorio.id}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: "application/json",
+                },
+              });
+
+              if (response.ok) {
+                Alert.alert("Éxito", "El consultorio ha sido eliminado");
+                navigation.navigation("ListarConsultorios");
+              } else {
+                const err = await response.json();
+                Alert.alert("Error", err.message || "No se pudo eliminar el consultorio");
+              }
+            } catch (error) {
+              console.error("Error eliminando consultorio:", error);
+              Alert.alert("Error", "Ocurrió un problema al eliminar el consultorio");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -107,6 +144,14 @@ export default function DetalleConsultorio({ route, navigation }) {
         <Text style={styles.buttonText}>Editar consultorio</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[styles.button, styles.deleteButton]}
+        onPress={handleEliminar}
+      >
+        <Ionicons name="trash-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Eliminar consultorio</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={20} color="white" />
         <Text style={styles.buttonText}>Regresar</Text>
@@ -141,6 +186,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginTop: 12,
   },
-  editButton: { backgroundColor: "#6fbeb4ff" },
+  editButton: { backgroundColor: "#c2b485ff" },
+  deleteButton: { backgroundColor: "#e57373" },
   buttonText: { color: "white", fontSize: 16, fontWeight: "600", marginLeft: 6 },
 });

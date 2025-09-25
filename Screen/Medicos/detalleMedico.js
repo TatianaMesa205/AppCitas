@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native"
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import API_BASE_URL from "../../Src/Config"
@@ -8,6 +8,44 @@ export default function DetalleMedico({ route, navigation }) {
   const { medico: medicoParam, id: idParam } = route.params || {}
   const [medico, setMedico] = useState(medicoParam || null)
   const [loading, setLoading] = useState(!medicoParam)
+
+  const handleEliminar = async () => {
+  Alert.alert(
+    "Confirmar eliminación",
+    "¿Seguro que deseas eliminar este medico?",
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const token = await AsyncStorage.getItem("token");
+            const response = await fetch(`${API_BASE_URL}/eliminarMedicos/${medico.id}`, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            });
+
+            if (response.ok) {
+              Alert.alert("Éxito", "El medico ha sido eliminado");
+              navigation.navigate("ListarMedicos");
+            } else {
+              const err = await response.json();
+              Alert.alert("Error", err.message || "No se pudo eliminar el medico");
+            }
+          } catch (error) {
+            console.error("Error eliminando medico:", error);
+            Alert.alert("Error", "Ocurrió un problema al eliminar el medico");
+          }
+        },
+      },
+    ]
+  );
+};
+
 
   useEffect(() => {
     if (medicoParam) {
@@ -108,6 +146,15 @@ export default function DetalleMedico({ route, navigation }) {
         <Text style={styles.buttonText}>Editar médico</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[styles.button, styles.deleteButton]}
+        onPress={handleEliminar}
+      >
+        <Ionicons name="trash-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Eliminar medico</Text>
+      </TouchableOpacity>
+
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-outline" size={20} color="white" />
         <Text style={styles.buttonText}>Regresar</Text>
@@ -142,6 +189,8 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginTop: 12,
   },
-  editButton: { backgroundColor: "#6fbeb4ff" },
+  editButton: { backgroundColor: "#c2b485ff" },
   buttonText: { color: "white", fontSize: 16, fontWeight: "600", marginLeft: 6 },
+  deleteButton: { backgroundColor: "#e57373" },
+
 })

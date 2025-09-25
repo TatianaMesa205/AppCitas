@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../../Src/Config";
 
 export default function DetalleEspecialidad({ route, navigation }) {
-  // Aceptamos dos formas: { consultorio } o { id }
+  // Aceptamos dos formas: { especialidad } o { id }
   const { especialidad: especialidadParam, id: idParam } = route.params || {};
   const [especialidades, setEspecialidades] = useState(especialidadParam || null);
   const [loading, setLoading] = useState(!especialidadParam); // si ya viene, no cargamos
 
   useEffect(() => {
-    // si ya vino el consultorio por params, no hacemos fetch
     if (especialidadParam) {
       setLoading(false);
       return;
@@ -24,7 +23,6 @@ export default function DetalleEspecialidad({ route, navigation }) {
     const fetchDetalle = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        // Ajusta la ruta según tu backend real. Aquí uso una ruta GET típica:
         const url = `${API_BASE_URL}/especialidades/${idParam}`;
         console.log("👉 Fetch detalle Especialidades:", url, "token:", !!token);
         const response = await fetch(url, {
@@ -41,12 +39,11 @@ export default function DetalleEspecialidad({ route, navigation }) {
         if (!response.ok) {
           console.error("Detalle especialidad - status:", response.status, data);
         } else {
-          // Si backend devuelve array con 1 elemento: tomar el primero
           const item = Array.isArray(data) ? data[0] : data;
           setEspecialidades(item || null);
         }
       } catch (error) {
-        console.error("Error obteniendo consultorio:", error);
+        console.error("Error obteniendo especialidad:", error);
       } finally {
         setLoading(false);
       }
@@ -54,6 +51,43 @@ export default function DetalleEspecialidad({ route, navigation }) {
 
     fetchDetalle();
   }, [especialidadParam, idParam]);
+
+  const handleEliminar = async () => {
+    Alert.alert(
+      "Confirmar eliminación",
+      "¿Seguro que deseas eliminar esta especialidad?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem("token");
+              const response = await fetch(`${API_BASE_URL}/eliminarEspecialidades/${especialidades.id}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: "application/json",
+                },
+              });
+
+              if (response.ok) {
+                Alert.alert("Éxito", "La especialidad ha sido eliminada");
+                navigation.navigate("ListarEspecialidades");
+              } else {
+                const err = await response.json();
+                Alert.alert("Error", err.message || "No se pudo eliminar la especialidad");
+              }
+            } catch (error) {
+              console.error("Error eliminando especialidad:", error);
+              Alert.alert("Error", "Ocurrió un problema al eliminar la especialidad");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   if (loading) {
     return (
@@ -87,7 +121,6 @@ export default function DetalleEspecialidad({ route, navigation }) {
         </View>
       </View>
 
-      {/* Enviamos los parámetros que Editar espera (id, numeroInicial, ubicacionInicial) */}
       <TouchableOpacity
         style={[styles.button, styles.editButton]}
         onPress={() =>
@@ -99,6 +132,14 @@ export default function DetalleEspecialidad({ route, navigation }) {
       >
         <Ionicons name="create-outline" size={20} color="white" />
         <Text style={styles.buttonText}>Editar especialidad</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.deleteButton]}
+        onPress={handleEliminar}
+      >
+        <Ionicons name="trash-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Eliminar especialidad</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
@@ -135,6 +176,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginTop: 12,
   },
-  editButton: { backgroundColor: "#6fbeb4ff" },
+  editButton: { backgroundColor: "#c2b485ff" },
+  deleteButton: { backgroundColor: "#e57373" },
   buttonText: { color: "white", fontSize: 16, fontWeight: "600", marginLeft: 6 },
 });

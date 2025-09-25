@@ -72,7 +72,7 @@ export default function ListarMedicos({ navigation }) {
                 <Text style={styles.telefono}>📞 {item.telefono}</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="#ffffffff" />
+            <Ionicons name="chevron-forward-outline" size={24} color="#706180ff" />
           </TouchableOpacity>
         )}
       />

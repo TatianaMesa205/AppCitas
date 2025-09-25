@@ -1,9 +1,10 @@
 // CitasStack.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import ListarCitasP from "../../Screen/Citas/listarCitasP";
-import CrearCitaP from "../../Screen/Citas/crearCita";
+import ListarMisCitas from "../../Screen/Citas/listarMisCitas";
+import CrearCitaP from "../../Screen/Citas/crearCitaP";
 import DetalleCitaP from "../../Screen/Citas/detalleCitaP";
+import CrearPacienteP from "../../Screen/Pacientes/crearPacienteP";
 
 const Stack = createStackNavigator();
 
@@ -11,9 +12,9 @@ export default function CitasStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen 
-        name="ListarCitasP" 
-        component={ListarCitasP} 
-        options={{ title: "Citas Agendadas" }} 
+        name="ListarMisCitas" 
+        component={ListarMisCitas} 
+        options={{ title: "Mis citas" }} 
       />
       <Stack.Screen 
         name="CrearCitaP" 
@@ -23,7 +24,12 @@ export default function CitasStack() {
       <Stack.Screen 
         name="DetalleCitaP" 
         component={DetalleCitaP}
-        options={{ title: "Detalle de la Cita" }} 
+        options={{ title: "Detalle de tu Cita" }} 
+      />
+      <Stack.Screen 
+        name="CrearPacienteP" 
+        component={CrearPacienteP}
+        options={{ title: "Registrate como paciente" }} 
       />
     </Stack.Navigator>
   );

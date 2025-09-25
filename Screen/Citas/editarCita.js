@@ -34,9 +34,17 @@ export default function EditarCita({ route, navigation }) {
       try {
         const token = await AsyncStorage.getItem("token")
         const [pacRes, medRes, conRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/listarPacientes`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
-          fetch(`${API_BASE_URL}/listarMedicos`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
-          fetch(`${API_BASE_URL}/listarConsultorios`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
+          fetch(`${API_BASE_URL}/listarPacientes`, { 
+            headers: { Authorization: `Bearer ${token}`, 
+            Accept: "application/json" } }),
+
+          fetch(`${API_BASE_URL}/listarMedicos`, { 
+            headers: { Authorization: `Bearer ${token}`, 
+            Accept: "application/json" } }),
+
+          fetch(`${API_BASE_URL}/listarConsultorios`, { 
+            headers: { Authorization: `Bearer ${token}`, 
+            Accept: "application/json" } }),
         ])
         setPacientes(await pacRes.json())
         setMedicos(await medRes.json())

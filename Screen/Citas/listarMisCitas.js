@@ -37,10 +37,10 @@ export default function ListarMisCitas({ navigation }) {
           setCitas(data.data ?? [])
           setIdPaciente(data.paciente_id) // 👈 guardamos el id para crear cita después
         } else {
-          Alert.alert("registro requerido", "⚠️ no estás registrado como paciente")
+          Alert.alert("Registro requerido", "⚠️ No estás registrado como paciente")
         }
       } catch (error) {
-        console.error("error obteniendo citas:", error)
+        console.error("Error obteniendo citas:", error)
       } finally {
         setLoading(false)
       }
@@ -58,7 +58,7 @@ export default function ListarMisCitas({ navigation }) {
 
   const handleCrearCita = () => {
     if (!idPaciente) {
-      Alert.alert("registro requerido", "⚠️ debes registrarte primero como paciente para poder crear una cita.")
+      Alert.alert("Registro requerido", "⚠️ Debes registrarte primero como paciente para poder crear una cita.")
       return
     }
     navigation.navigate("CrearCitaP", { idPaciente }) // 👈 aquí lo pasas
@@ -68,7 +68,7 @@ export default function ListarMisCitas({ navigation }) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#706180ff" />
-        <Text style={{ marginTop: 10, color: "#706180ff" }}>cargando citas...</Text>
+        <Text style={{ marginTop: 10, color: "#706180ff" }}>Cargando citas...</Text>
       </View>
     )
   }
@@ -157,7 +157,7 @@ export default function ListarMisCitas({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f0ff", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", color: "#706180ff", marginBottom: 15, textAlign: "center" },
+  title: { fontSize: 24, fontWeight: "bold", color: "#9b83b4ff", marginBottom: 15, textAlign: "center" },
   list: { paddingBottom: 20 },
   warningText: { fontSize: 16, color: "#a14", textAlign: "center", marginVertical: 20 },
   card: {
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   date: { fontSize: 16, fontWeight: "600", color: "#776985ff" },
   doctor: { fontSize: 14, color: "#675285ff" },
   addButton: {
-    backgroundColor: "#9b80beff",
+    backgroundColor: "#9b8bb1ff",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

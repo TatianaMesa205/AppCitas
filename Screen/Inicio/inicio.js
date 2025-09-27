@@ -8,21 +8,40 @@ import * as Animatable from "react-native-animatable";
 export default function Inicio({ navigation }) {
   const [userName, setUserName] = useState("");
   const [greeting, setGreeting] = useState("");
+  const [medicosCount, setMedicosCount] = useState(0);
+  const [pacientesCount, setPacientesCount] = useState(0);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserAndStats = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
         if (!token) return;
 
+        // ---- Obtener usuario (ya lo tenías) ----
         const response = await fetch(`${API_BASE_URL}/me`, {
           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         });
 
         const data = await response.json();
         if (response.ok) setUserName(data.user?.name || "Usuario");
+
+        // ---- Obtener contador de médicos ----
+        const resMedicos = await fetch(`${API_BASE_URL}/contadorMedicos`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+        const dataMedicos = await resMedicos.json();
+        if (resMedicos.ok) setMedicosCount(dataMedicos.cantidad_medicos || 0);
+
+        
+
+        // ---- Obtener contador de pacientes ----
+        const resPacientes = await fetch(`${API_BASE_URL}/contadorPacientes`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+        const dataPacientes = await resPacientes.json();
+        if (resPacientes.ok) setPacientesCount(dataPacientes.cantidad_pacientes || 0);
       } catch (error) {
-        console.error("Error obteniendo usuario:", error);
+        console.error("Error obteniendo datos:", error);
       }
     };
 
@@ -32,7 +51,7 @@ export default function Inicio({ navigation }) {
     else if (hour < 18) setGreeting("☀️ Buenas tardes");
     else setGreeting("🌙 Buenas noches");
 
-    fetchUser();
+    fetchUserAndStats();
   }, []);
 
   return (
@@ -53,12 +72,12 @@ export default function Inicio({ navigation }) {
       <Animatable.View animation="fadeInUp" delay={200} style={styles.statsRow}>
         <View style={styles.statBox}>
           <Ionicons name="medkit-outline" size={28} color="#4b6584" />
-          <Text style={styles.statNumber}>12</Text>
+          <Text style={styles.statNumber}>{medicosCount}</Text>
           <Text style={styles.statLabel}>Médicos</Text>
         </View>
         <View style={styles.statBox}>
           <Ionicons name="people-outline" size={28} color="#4b6584" />
-          <Text style={styles.statNumber}>28</Text>
+          <Text style={styles.statNumber}>{pacientesCount}</Text>
           <Text style={styles.statLabel}>Pacientes</Text>
         </View>
       </Animatable.View>

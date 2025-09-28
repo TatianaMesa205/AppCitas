@@ -27,12 +27,12 @@ export default function ListarMedicos() {
         try { data = JSON.parse(text) } catch (e) { data = text }
 
         if (!response.ok) {
-          console.error("listar medicos - status:", response.status, data)
+          console.error("Listar medicos - status:", response.status, data)
         } else {
           setMedicos(Array.isArray(data) ? data : [])
         }
       } catch (error) {
-        console.error("error obteniendo medicos:", error)
+        console.error("Error obteniendo medicos:", error)
       } finally {
         setLoading(false)
       }

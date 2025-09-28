@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import API_BASE_URL from "../../Src/Config";
 
 export default function DetallePaciente({ route, navigation }) {
   const { paciente } = route.params;
@@ -17,7 +19,7 @@ export default function DetallePaciente({ route, navigation }) {
         onPress: async () => {
           try {
             const token = await AsyncStorage.getItem("token");
-            const response = await fetch(`${API_BASE_URL}/eliminarPacientes/${especialidades.id}`, {
+            const response = await fetch(`${API_BASE_URL}/eliminarPacientes/${paciente.id}`, {
               method: "DELETE",
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -30,11 +32,11 @@ export default function DetallePaciente({ route, navigation }) {
               navigation.navigate("ListarPacientes");
             } else {
               const err = await response.json();
-              Alert.alert("Error", err.message || "No se pudo eliminar el medico");
+              Alert.alert("Error", err.message || "No se pudo eliminar el paciente");
             }
           } catch (error) {
-            console.error("Error eliminando especialidad:", error);
-            Alert.alert("Error", "Ocurrió un problema al eliminar el medico");
+            console.error("Error eliminando paciente:", error);
+            Alert.alert("Error", "Ocurrió un problema al eliminar el paciente");
           }
         },
       },
@@ -103,7 +105,7 @@ export default function DetallePaciente({ route, navigation }) {
         onPress={handleEliminar}
       >
         <Ionicons name="trash-outline" size={20} color="white" />
-        <Text style={styles.buttonText}>Eliminar especialidad</Text>
+        <Text style={styles.buttonText}>Eliminar Paciente</Text>
       </TouchableOpacity>
 
 

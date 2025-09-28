@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList } from "react-native"
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList} from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import API_BASE_URL from "../../Src/Config"
 
 export default function CrearMedico({ navigation }) {
@@ -87,12 +88,16 @@ export default function CrearMedico({ navigation }) {
   if (loading) return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color="#9b59b6" />
-      <Text style={{ marginTop: 10 }}>Cargando especialidades...</Text>
+      <Text style={{ marginTop: 10 }}>Cargando medicos...</Text>
     </View>
   )
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.scrollContainer}
+      extraScrollHeight={100}   // mueve más arriba al abrir teclado
+      enableOnAndroid={true}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>➕ Nuevo Médico</Text>
 
@@ -152,7 +157,12 @@ export default function CrearMedico({ navigation }) {
       </View>
 
       {/* Modal de especialidades */}
-      <Modal transparent visible={especialidadModalVisible} animationType="fade" onRequestClose={() => setEspecialidadModalVisible(false)}>
+      <Modal 
+        transparent 
+        visible={especialidadModalVisible} 
+        animationType="fade" 
+        onRequestClose={() => setEspecialidadModalVisible(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <FlatList
@@ -173,16 +183,16 @@ export default function CrearMedico({ navigation }) {
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAwareScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: "#f3e9f7",
-    justifyContent: "center",
     padding: 20,
+    justifyContent: "center",
   },
   card: {
     backgroundColor: "#fff",
@@ -240,8 +250,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" },
-  modalContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 20, width: "80%" },
-  option: { padding: 12, borderBottomWidth: 1, borderBottomColor: "#eee" },
-  optionText: { fontSize: 16, color: "#5e0066" },
+  modalOverlay: { 
+    flex: 1, 
+    backgroundColor: "rgba(0,0,0,0.4)", 
+    justifyContent: "center", 
+    alignItems: "center" 
+  },
+  modalContainer: { 
+    backgroundColor: "#fff", 
+    padding: 20, 
+    borderRadius: 20, 
+    width: "80%" 
+  },
+  option: { 
+    padding: 12, 
+    borderBottomWidth: 1, 
+    borderBottomColor: "#eee" 
+  },
+  optionText: { 
+    fontSize: 16, 
+    color: "#5e0066" 
+  },
 })

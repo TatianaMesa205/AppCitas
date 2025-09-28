@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import API_BASE_URL from "../../Src/Config";
 
 export default function CrearPacienteP({ navigation }) {
@@ -9,10 +10,26 @@ export default function CrearPacienteP({ navigation }) {
   const [apellido, setApellido] = useState("");
   const [documento, setDocumento] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // email desde AsyncStorage
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [direccion, setDireccion] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Traer el email guardado en AsyncStorage
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem("email");
+        if (storedEmail) {
+          setEmail(storedEmail);
+          console.log("📧 Email cargado desde AsyncStorage:", storedEmail);
+        }
+      } catch (error) {
+        console.error("Error al obtener el email:", error);
+      }
+    };
+    fetchEmail();
+  }, []);
 
   const handleCrear = async () => {
     if (!nombre || !apellido || !documento || !telefono || !email || !fechaNacimiento || !direccion) {
@@ -47,7 +64,7 @@ export default function CrearPacienteP({ navigation }) {
           apellido,
           documento,
           telefono,
-          email,
+          email, // Se envía el email desde AsyncStorage
           fecha_nacimiento: fechaNacimiento,
           direccion,
         }),
@@ -58,13 +75,11 @@ export default function CrearPacienteP({ navigation }) {
       if (response.ok) {
         Alert.alert("✅ Éxito", body.message || "Paciente creado correctamente");
 
-        // Guardamos el id del paciente en AsyncStorage
         if (body.data?.id) {
           await AsyncStorage.setItem("id_paciente", body.data.id.toString());
           console.log("✅ id_paciente guardado:", body.data.id);
         }
 
-        // Pasamos el paciente como parámetro a ListarMisCitas
         navigation.navigate("ListarMisCitas", { paciente: body.data });
         return;
       }
@@ -85,7 +100,12 @@ export default function CrearPacienteP({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      enableOnAndroid={true}
+      extraScrollHeight={25}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>➕ Nuevo Paciente</Text>
         <Text style={styles.label}>Nombre</Text>
@@ -96,14 +116,17 @@ export default function CrearPacienteP({ navigation }) {
         <TextInput style={styles.input} placeholder="Ej: 12345678" value={documento} onChangeText={setDocumento} keyboardType="numeric" placeholderTextColor="#b0b0b0"/>
         <Text style={styles.label}>Teléfono</Text>
         <TextInput style={styles.input} placeholder="Ej: 3001234567" value={telefono} onChangeText={setTelefono} keyboardType="phone-pad" placeholderTextColor="#b0b0b0"/>
-        <Text style={styles.label}>Email</Text>
-        <TextInput style={styles.input} placeholder="Ej: correo@ejemplo.com" value={email} onChangeText={setEmail} keyboardType="email-address" placeholderTextColor="#b0b0b0"/>
         <Text style={styles.label}>Fecha de nacimiento</Text>
         <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
           <Text style={{ color: fechaNacimiento ? "#333" : "#b0b0b0" }}>{fechaNacimiento || "📅 Seleccione una fecha"}</Text>
         </TouchableOpacity>
         {showDatePicker && (
-          <DateTimePicker value={fechaNacimiento ? new Date(fechaNacimiento) : new Date()} mode="date" display={Platform.OS === "ios" ? "spinner" : "default"} onChange={handleDateChange}/>
+          <DateTimePicker
+            value={fechaNacimiento ? new Date(fechaNacimiento) : new Date()}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={handleDateChange}
+          />
         )}
         <Text style={styles.label}>Dirección</Text>
         <TextInput style={styles.input} placeholder="Ej: Calle 123 #45-67" value={direccion} onChangeText={setDireccion} placeholderTextColor="#b0b0b0"/>
@@ -111,22 +134,21 @@ export default function CrearPacienteP({ navigation }) {
           <Text style={styles.buttonText}>Crear Paciente</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f3e9f7",
-    justifyContent: "center",
-    padding: 20,
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 20,
     padding: 25,
+    marginVertical: 30,
+    marginHorizontal: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.15,

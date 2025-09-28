@@ -68,7 +68,7 @@ export default function ListarMisCitas({ navigation }) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#706180ff" />
-        <Text style={{ marginTop: 10, color: "#706180ff" }}>Cargando citas...</Text>
+        <Text style={{ marginTop: 10, color: "#706180ff" }}>Cargando mis citas...</Text>
       </View>
     )
   }

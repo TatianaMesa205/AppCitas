@@ -77,7 +77,7 @@ export default function DetalleConsultorio({ route, navigation }) {
 
               if (response.ok) {
                 Alert.alert("Éxito", "El consultorio ha sido eliminado");
-                navigation.navigation("ListarConsultorios");
+                navigation.navigate("ListarConsultorios");
               } else {
                 const err = await response.json();
                 Alert.alert("Error", err.message || "No se pudo eliminar el consultorio");

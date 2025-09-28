@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import API_BASE_URL from "../../Src/Config";
@@ -94,7 +95,12 @@ export default function CrearPaciente({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      enableOnAndroid
+      extraScrollHeight={20}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>➕ Nuevo Paciente</Text>
 
@@ -174,7 +180,7 @@ export default function CrearPaciente({ navigation }) {
           <Text style={styles.buttonText}>Crear Paciente</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -182,7 +188,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f3e9f7",
-    justifyContent: "center",
     padding: 20,
   },
   card: {

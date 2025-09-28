@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList, Platform } from "react-native"
+import { 
+  View, Text, TextInput, TouchableOpacity, 
+  StyleSheet, Alert, ActivityIndicator, 
+  Modal, FlatList, Platform 
+} from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import API_BASE_URL from "../../Src/Config"
 
 export default function EditarCita({ route, navigation }) {
@@ -34,24 +39,16 @@ export default function EditarCita({ route, navigation }) {
       try {
         const token = await AsyncStorage.getItem("token")
         const [pacRes, medRes, conRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/listarPacientes`, { 
-            headers: { Authorization: `Bearer ${token}`, 
-            Accept: "application/json" } }),
-
-          fetch(`${API_BASE_URL}/listarMedicos`, { 
-            headers: { Authorization: `Bearer ${token}`, 
-            Accept: "application/json" } }),
-
-          fetch(`${API_BASE_URL}/listarConsultorios`, { 
-            headers: { Authorization: `Bearer ${token}`, 
-            Accept: "application/json" } }),
+          fetch(`${API_BASE_URL}/listarPacientes`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
+          fetch(`${API_BASE_URL}/listarMedicos`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
+          fetch(`${API_BASE_URL}/listarConsultorios`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
         ])
         setPacientes(await pacRes.json())
         setMedicos(await medRes.json())
         setConsultorios(await conRes.json())
       } catch (e) {
         console.error("Error cargando datos:", e)
-        Alert.alert("Error cargando pacientes, medicos o consultorios")
+        Alert.alert("Error cargando pacientes, médicos o consultorios")
       } finally {
         setLoading(false)
       }
@@ -97,7 +94,11 @@ export default function EditarCita({ route, navigation }) {
   )
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>✏️ Editar Cita</Text>
 
@@ -134,16 +135,33 @@ export default function EditarCita({ route, navigation }) {
           <Text style={{ color: fecha ? "#5c4033" : "#aaa" }}>{fecha || "Selecciona Fecha"}</Text>
         </TouchableOpacity>
         {showDatePicker && (
-          <DateTimePicker value={fecha ? new Date(fecha) : new Date()} mode="date" display={Platform.OS==="ios"?"spinner":"default"} onChange={handleDateChange}/>
+          <DateTimePicker 
+            value={fecha ? new Date(fecha) : new Date()} 
+            mode="date" 
+            display={Platform.OS==="ios"?"spinner":"default"} 
+            onChange={handleDateChange}
+          />
         )}
 
         {/* Hora */}
         <Text style={styles.label}>Hora</Text>
-        <TextInput style={styles.input} placeholder="HH:MM" placeholderTextColor="#b0b0b0" value={hora} onChangeText={setHora}/>
+        <TextInput 
+          style={styles.input} 
+          placeholder="HH:MM" 
+          placeholderTextColor="#b0b0b0" 
+          value={hora} 
+          onChangeText={setHora}
+        />
 
         {/* Motivo */}
         <Text style={styles.label}>Motivo</Text>
-        <TextInput style={styles.input} placeholder="Motivo de la cita" placeholderTextColor="#b0b0b0" value={motivo} onChangeText={setMotivo}/>
+        <TextInput 
+          style={styles.input} 
+          placeholder="Motivo de la cita" 
+          placeholderTextColor="#b0b0b0" 
+          value={motivo} 
+          onChangeText={setMotivo}
+        />
 
         {/* Estado */}
         <Text style={styles.label}>Estado</Text>
@@ -162,11 +180,15 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalPacienteVisible} animationType="fade" onRequestClose={() => setModalPacienteVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList data={pacientes} keyExtractor={item => item.id.toString()} renderItem={({item}) => (
-              <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
-                <Text style={styles.optionText}>{item.nombre}</Text>
-              </TouchableOpacity>
-            )}/>
+            <FlatList 
+              data={pacientes} 
+              keyExtractor={item => item.id.toString()} 
+              renderItem={({item}) => (
+                <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
+                  <Text style={styles.optionText}>{item.nombre}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
       </Modal>
@@ -174,11 +196,15 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalMedicoVisible} animationType="fade" onRequestClose={() => setModalMedicoVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList data={medicos} keyExtractor={item => item.id.toString()} renderItem={({item}) => (
-              <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
-                <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
-              </TouchableOpacity>
-            )}/>
+            <FlatList 
+              data={medicos} 
+              keyExtractor={item => item.id.toString()} 
+              renderItem={({item}) => (
+                <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
+                  <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
       </Modal>
@@ -186,11 +212,15 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalConsultorioVisible} animationType="fade" onRequestClose={() => setModalConsultorioVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList data={consultorios} keyExtractor={item => item.id.toString()} renderItem={({item}) => (
-              <TouchableOpacity style={styles.option} onPress={() => { setIdConsultorio(item.id); setModalConsultorioVisible(false) }}>
-                <Text style={styles.optionText}>Consultorio {item.numero}</Text>
-              </TouchableOpacity>
-            )}/>
+            <FlatList 
+              data={consultorios} 
+              keyExtractor={item => item.id.toString()} 
+              renderItem={({item}) => (
+                <TouchableOpacity style={styles.option} onPress={() => { setIdConsultorio(item.id); setModalConsultorioVisible(false) }}>
+                  <Text style={styles.optionText}>Consultorio {item.numero}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
       </Modal>
@@ -198,24 +228,28 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalEstadoVisible} animationType="fade" onRequestClose={() => setModalEstadoVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList data={estadosOpciones} keyExtractor={(item, index) => index.toString()} renderItem={({item}) => (
-              <TouchableOpacity style={styles.option} onPress={() => { setEstado(item); setModalEstadoVisible(false) }}>
-                <Text style={styles.optionText}>{item}</Text>
-              </TouchableOpacity>
-            )}/>
+            <FlatList 
+              data={estadosOpciones} 
+              keyExtractor={(item, index) => index.toString()} 
+              renderItem={({item}) => (
+                <TouchableOpacity style={styles.option} onPress={() => { setEstado(item); setModalEstadoVisible(false) }}>
+                  <Text style={styles.optionText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
       </Modal>
-    </View>
+    </KeyboardAwareScrollView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f5f0e6", // beige de fondo
-    justifyContent: "center",
+    flexGrow: 1,
+    backgroundColor: "#f5f0e6",
     padding: 20,
+    justifyContent: "center",
   },
   card: {
     backgroundColor: "#fff",

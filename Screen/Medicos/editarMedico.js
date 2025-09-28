@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"; // 👈 import
 import API_BASE_URL from "../../Src/Config";
 
 export default function EditarMedico({ route, navigation }) {
@@ -26,7 +27,7 @@ export default function EditarMedico({ route, navigation }) {
         const data = await response.json();
         setEspecialidades(data);
       } catch (error) {
-        console.error("Error cargando especialidades", error);
+        console.error("Error cargando medicos", error);
       } finally {
         setLoading(false);
       }
@@ -71,7 +72,12 @@ export default function EditarMedico({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      enableOnAndroid
+      extraScrollHeight={20}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>✏️ Editar Médico</Text>
 
@@ -150,7 +156,7 @@ export default function EditarMedico({ route, navigation }) {
           <Text style={styles.buttonText}>Guardar Cambios</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -158,7 +164,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f0e6", // beige
-    justifyContent: "center",
     padding: 20,
   },
   card: {

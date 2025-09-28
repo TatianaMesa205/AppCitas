@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import Ionicons from "react-native-vector-icons/Ionicons"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import API_BASE_URL from "../../Src/Config"
 
 export default function CrearCita({ navigation }) {
@@ -119,7 +120,13 @@ export default function CrearCita({ navigation }) {
   )
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      enableOnAndroid={true}
+      extraScrollHeight={130}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.card}>
         <Text style={styles.title}>📅 Nueva Cita</Text>
 
@@ -199,73 +206,73 @@ export default function CrearCita({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleCrear}>
           <Text style={styles.buttonText}>Crear Cita</Text>
         </TouchableOpacity>
+
       </View>
-
-      {/* Modales */}
-      <Modal transparent visible={modalPacienteVisible} animationType="fade" onRequestClose={() => setModalPacienteVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={pacientes}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
-                  <Text style={styles.optionText}>{item.nombre}</Text>
-                </TouchableOpacity>
-              )}
-            />
+        {/* Modales */}
+        <Modal transparent visible={modalPacienteVisible} animationType="fade" onRequestClose={() => setModalPacienteVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <FlatList
+                data={pacientes}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
+                    <Text style={styles.optionText}>{item.nombre}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal transparent visible={modalMedicoVisible} animationType="fade" onRequestClose={() => setModalMedicoVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={medicos}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
-                  <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
-                </TouchableOpacity>
-              )}
-            />
+        <Modal transparent visible={modalMedicoVisible} animationType="fade" onRequestClose={() => setModalMedicoVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <FlatList
+                data={medicos}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
+                    <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal transparent visible={modalConsultorioVisible} animationType="fade" onRequestClose={() => setModalConsultorioVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={consultorios}
-              keyExtractor={item => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.option} onPress={() => { setIdConsultorio(item.id); setModalConsultorioVisible(false) }}>
-                  <Text style={styles.optionText}>Consultorio {item.numero}</Text>
-                </TouchableOpacity>
-              )}
-            />
+        <Modal transparent visible={modalConsultorioVisible} animationType="fade" onRequestClose={() => setModalConsultorioVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <FlatList
+                data={consultorios}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.option} onPress={() => { setIdConsultorio(item.id); setModalConsultorioVisible(false) }}>
+                    <Text style={styles.optionText}>Consultorio {item.numero}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal transparent visible={modalEstadoVisible} animationType="fade" onRequestClose={() => setModalEstadoVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={estadosOpciones}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.option} onPress={() => { setEstado(item); setModalEstadoVisible(false) }}>
-                  <Text style={styles.optionText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
+        <Modal transparent visible={modalEstadoVisible} animationType="fade" onRequestClose={() => setModalEstadoVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <FlatList
+                data={estadosOpciones}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.option} onPress={() => { setEstado(item); setModalEstadoVisible(false) }}>
+                    <Text style={styles.optionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+    </KeyboardAwareScrollView>
   )
 }
 
@@ -273,8 +280,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f3e9f7",
-    justifyContent: "center",
-    padding: 20,
+    padding: 20,   // quitamos justifyContent aquí para que no bloquee scroll
   },
   card: {
     backgroundColor: "#fff",

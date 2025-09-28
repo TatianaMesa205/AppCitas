@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import API_BASE_URL from "../../Src/Config";
 
 export default function EditarPaciente({ route, navigation }) {
@@ -76,7 +77,11 @@ export default function EditarPaciente({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.scrollContainer}
+      extraScrollHeight={100}   // 🔹 mueve más arriba al abrir teclado
+      enableOnAndroid={true}
+    >
       <View style={styles.card}>
         <Text style={styles.title}>✏️ Editar Paciente</Text>
 
@@ -153,16 +158,16 @@ export default function EditarPaciente({ route, navigation }) {
           <Text style={styles.buttonText}>Guardar Cambios</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
     backgroundColor: "#f5f0e6", // beige
-    justifyContent: "center",
     padding: 20,
+    justifyContent: "center",
   },
   card: {
     backgroundColor: "#fff",

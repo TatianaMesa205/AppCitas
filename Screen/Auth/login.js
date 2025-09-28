@@ -29,9 +29,14 @@ export default function Login({ navigation }) {
         // ✅ Guardar token en AsyncStorage
         await AsyncStorage.setItem("token", data.access_token);
 
-        // ✅ Guardar role en AsyncStorage (si tu backend lo envía)
+        // ✅ Guardar role en AsyncStorage
         if (data.user && data.user.role) {
           await AsyncStorage.setItem("role", data.user.role);
+        }
+
+        // ✅ Guardar email en AsyncStorage
+        if (data.user && data.user.email) {
+          await AsyncStorage.setItem("email", data.user.email);
         }
 
         alert(data.message);
@@ -52,6 +57,7 @@ export default function Login({ navigation }) {
       alert("No se pudo conectar con el servidor");
     }
   };
+
 
   return (
     <View style={styles.container}>

@@ -134,7 +134,10 @@ export default function CrearCita({ navigation }) {
         <Text style={styles.label}>Paciente</Text>
         <TouchableOpacity style={styles.selectButton} onPress={() => setModalPacienteVisible(true)}>
           <Text style={styles.selectText}>
-            {idPaciente ? pacientes.find(p => p.id === idPaciente)?.nombre : "Selecciona un paciente"}
+            {idPaciente 
+          ? `${pacientes.find(p => p.id === idPaciente)?.nombre} ${pacientes.find(p => p.id === idPaciente)?.apellido}` 
+          : "Selecciona un paciente"}
+
           </Text>
           <Ionicons name="chevron-down" size={20} color="#9b59b6" />
         </TouchableOpacity>
@@ -143,7 +146,9 @@ export default function CrearCita({ navigation }) {
         <Text style={styles.label}>Médico</Text>
         <TouchableOpacity style={styles.selectButton} onPress={() => setModalMedicoVisible(true)}>
           <Text style={styles.selectText}>
-            {idMedico ? medicos.find(m => m.id === idMedico)?.nombre_m : "Selecciona un médico"}
+            {idMedico
+              ? `${medicos.find(m => m.id === idMedico)?.nombre_m} ${medicos.find(m => m.id === idMedico)?.apellido_m}`
+              : "Selecciona un médico"}
           </Text>
           <Ionicons name="chevron-down" size={20} color="#9b59b6" />
         </TouchableOpacity>
@@ -209,15 +214,28 @@ export default function CrearCita({ navigation }) {
 
       </View>
         {/* Modales */}
-        <Modal transparent visible={modalPacienteVisible} animationType="fade" onRequestClose={() => setModalPacienteVisible(false)}>
+        <Modal
+          transparent
+          visible={modalPacienteVisible}
+          animationType="fade"
+          onRequestClose={() => setModalPacienteVisible(false)}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <FlatList
                 data={pacientes}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
-                    <Text style={styles.optionText}>{item.nombre}</Text>
+                  <TouchableOpacity
+                    style={styles.option}
+                    onPress={() => {
+                      setIdPaciente(item.id);
+                      setModalPacienteVisible(false);
+                    }}
+                  >
+                    <Text style={styles.optionText}>
+                      {item.nombre} {item.apellido}
+                    </Text>
                   </TouchableOpacity>
                 )}
               />

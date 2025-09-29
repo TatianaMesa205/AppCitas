@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, FlatList } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import API_BASE_URL from "../../Src/Config";
 
 export default function Registro({ navigation }) {
@@ -84,9 +85,12 @@ export default function Registro({ navigation }) {
         style={styles.selectButton}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.selectText}>
-          {role ? roles.find((r) => r.value === role)?.label : "Seleccionar Rol"}
-        </Text>
+        <View style={styles.selectRow}>
+          <Text style={styles.selectText}>
+            {role ? roles.find((r) => r.value === role)?.label : "Seleccionar Rol"}
+          </Text>
+          <Ionicons name="chevron-down" size={20} color="#9b59b6" />
+        </View>
       </TouchableOpacity>
 
       {/* Modal estilizado */}
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
   },
   selectText: {
     fontSize: 16,
-    color: "#5e0066ff",
+    color: "#cc66beff",
   },
   button: {
     backgroundColor: "#e29bdcff",
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#95519bff",
+    color: "#632e68ff",
     marginBottom: 15,
     textAlign: "center",
   },
@@ -214,6 +218,13 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-    color: "#5e0066ff",
+    color: "#621169ff",
   },
+  selectRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  width: "100%",
+},
+
 });

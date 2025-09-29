@@ -99,7 +99,7 @@ export default function CrearPaciente({ navigation }) {
       style={styles.container}
       contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       enableOnAndroid
-      extraScrollHeight={20}
+      extraScrollHeight={50}
     >
       <View style={styles.card}>
         <Text style={styles.title}>➕ Nuevo Paciente</Text>

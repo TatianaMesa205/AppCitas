@@ -107,7 +107,7 @@ export default function CrearPacienteP({ navigation }) {
       extraScrollHeight={25}
     >
       <View style={styles.card}>
-        <Text style={styles.title}>➕ Nuevo Paciente</Text>
+        <Text style={styles.title}>➕ Formulario citas</Text>
         <Text style={styles.label}>Nombre</Text>
         <TextInput style={styles.input} placeholder="Ej: Juan" value={nombre} onChangeText={setNombre} placeholderTextColor="#b0b0b0"/>
         <Text style={styles.label}>Apellido</Text>

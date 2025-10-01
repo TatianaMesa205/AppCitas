@@ -37,7 +37,7 @@ export default function ListarMisCitas({ navigation }) {
           setCitas(data.data ?? [])
           setIdPaciente(data.paciente_id) // 👈 guardamos el id para crear cita después
         } else {
-          Alert.alert("Registro requerido", "⚠️ No estás registrado como paciente")
+          Alert.alert("Registro requerido", "⚠️ Debes completar el formulario para poder crear una cita")
         }
       } catch (error) {
         console.error("Error obteniendo citas:", error)
@@ -139,7 +139,7 @@ export default function ListarMisCitas({ navigation }) {
         }}
       >
         <Ionicons name="person-add-outline" size={24} color="#fff" />
-        <Text style={styles.addButtonText}>Registrarme como paciente</Text>
+        <Text style={styles.addButtonText}>Completar formulario</Text>
       </TouchableOpacity>
 
 

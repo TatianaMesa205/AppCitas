@@ -21,7 +21,7 @@ export default function DetalleMedico({ route, navigation }) {
         onPress: async () => {
           try {
             const token = await AsyncStorage.getItem("token");
-            const response = await fetch(`${API_BASE_URL}/eliminarMedicos/${medico.id}`, {
+            const response = await fetch(`${API_BASE_URL}/eliminarMedico/${medicos.id}`, {
               method: "DELETE",
               headers: {
                 Authorization: `Bearer ${token}`,

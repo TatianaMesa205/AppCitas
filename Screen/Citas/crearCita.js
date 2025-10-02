@@ -10,6 +10,7 @@ export default function CrearCita({ navigation }) {
   const [pacientes, setPacientes] = useState([])
   const [medicos, setMedicos] = useState([])
   const [consultorios, setConsultorios] = useState([])
+  const [especialidades, setEspecialidades] = useState([])
   const [loading, setLoading] = useState(true)
 
   const [idPaciente, setIdPaciente] = useState("")
@@ -33,13 +34,18 @@ export default function CrearCita({ navigation }) {
     const fetchData = async () => {
       try {
         const token = await AsyncStorage.getItem("token")
-        const [pacRes, medRes, conRes] = await Promise.all([
+        const [pacRes, medRes, conRes, espRes] = await Promise.all([
           fetch(`${API_BASE_URL}/listarPacientes`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
           fetch(`${API_BASE_URL}/listarMedicos`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
           fetch(`${API_BASE_URL}/listarConsultorios`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
+          fetch(`${API_BASE_URL}/listarEspecialidades`, { headers: { Authorization: `Bearer ${token}`, Accept: "application/json" } }),
         ])
+
         setPacientes(await pacRes.json())
         setMedicos(await medRes.json())
+
+        setEspecialidades(await espRes.json());
+
         setConsultorios(await conRes.json())
       } catch (e) {
         console.error("Error cargando datos:", e)
@@ -104,6 +110,11 @@ export default function CrearCita({ navigation }) {
     }
   }
 
+  const getEspecialidad = (idEsp) => {
+    const esp = especialidades.find((e) => String(e.id) === String(idEsp));
+    return esp ? esp.nombre || esp.nombre_e || "Sin especialidad" : "Sin especialidad";
+  }
+
   const timevalue = hora ? (() => {
     const [h,m] = hora.split(":").map(Number)
     const d = new Date()
@@ -147,7 +158,8 @@ export default function CrearCita({ navigation }) {
         <TouchableOpacity style={styles.selectButton} onPress={() => setModalMedicoVisible(true)}>
           <Text style={styles.selectText}>
             {idMedico
-              ? `${medicos.find(m => m.id === idMedico)?.nombre_m} ${medicos.find(m => m.id === idMedico)?.apellido_m}`
+              ? `${medicos.find(m => m.id === idMedico)?.nombre_m} ${medicos.find(m => m.id === idMedico)?.apellido_m} -
+                ${getEspecialidad (medicos.find((m) => String(m.id) === String(idMedico))?.id_especialidades)}`
               : "Selecciona un médico"}
           </Text>
           <Ionicons name="chevron-down" size={20} color="#9b59b6" />
@@ -251,7 +263,7 @@ export default function CrearCita({ navigation }) {
                 keyExtractor={item => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
-                    <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
+                    <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m} - {getEspecialidad(item.id_especialidades)}</Text>
                   </TouchableOpacity>
                 )}
               />

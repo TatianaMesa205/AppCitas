@@ -1,153 +1,241 @@
+// import React, { useEffect, useState } from "react"
+// import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native"
+// import AsyncStorage from "@react-native-async-storage/async-storage"
+// import Ionicons from "react-native-vector-icons/Ionicons"
+// import API_BASE_URL from "../../Src/Config"
+
+// export default function Perfil({ navigation }) {
+//   const [user, setUser] = useState(null)
+//   const [loading, setLoading] = useState(true)
+
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       try {
+//         const token = await AsyncStorage.getItem("token")
+//         if (!token) return
+
+//         const response = await fetch(`${API_BASE_URL}/me`, {
+//           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+//         })
+//         const data = await response.json()
+//         if (response.ok) setUser(data.user)
+//         else console.log("Error en la respuesta:", data)
+//       } catch (error) {
+//         console.error("Error obteniendo usuario:", error)
+//       } finally {
+//         setLoading(false)
+//       }
+//     }
+//     fetchUser()
+//   }, [])
+
+//   const handleLogout = async () => {
+//     try {
+//       const token = await AsyncStorage.getItem("token")
+//       const response = await fetch(`${API_BASE_URL}/logout`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+//       })
+//       const data = await response.json()
+//       if (response.ok) {
+//         await AsyncStorage.removeItem("token")
+//         Alert.alert("👋 Hasta pronto", data.message)
+//         navigation.replace("Login")
+//       } else Alert.alert("Error", data.message || "No se pudo cerrar sesión")
+//     } catch (error) {
+//       console.error(error)
+//       Alert.alert("Error", "Ocurrió un problema al cerrar sesión")
+//     }
+//   }
+
+//   if (loading) {
+//     return (
+//       <View style={styles.loadingContainer}>
+//         <ActivityIndicator size="large" color="#6f42c1" />
+//         <Text style={styles.loadingText}>Cargando tu perfil...</Text>
+//       </View>
+//     )
+//   }
+
+//   return (
+//     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+//       {user ? (
+//         <>
+//           <View style={styles.header}>
+//             <Ionicons name="person-circle" size={100} color="#fff" />
+//             <Text style={styles.name}>{user.name}</Text>
+//             <View style={styles.roleContainer}>
+//               <Text style={styles.role}>{user.role}</Text>
+//             </View>
+//           </View>
+
+//           <View style={styles.card}>
+//             <Text style={styles.cardTitle}>Información del Usuario</Text>
+//             <View style={styles.infoRow}>
+//               <Text style={styles.label}>Nombre</Text>
+//               <Text style={styles.value}>{user.name}</Text>
+//             </View>
+//             <View style={styles.infoRow}>
+//               <Text style={styles.label}>Email</Text>
+//               <Text style={styles.value}>{user.email}</Text>
+//             </View>
+//             <View style={styles.infoRow}>
+//               <Text style={styles.label}>Rol</Text>
+//               <Text style={styles.value}>{user.role}</Text>
+//             </View>
+//           </View>
+
+//           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+//             <Ionicons name="log-out-outline" size={20} color="#fff" />
+//             <Text style={styles.logoutText}>Cerrar Sesión</Text>
+//           </TouchableOpacity>
+//         </>
+//       ) : (
+//         <Text style={styles.errorText}>No se pudieron cargar los datos.</Text>
+//       )}
+//     </ScrollView>
+//   )
+// }
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, backgroundColor: "#f0f0f5" },
+//   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f0f0f5" },
+//   loadingText: { marginTop: 10, fontSize: 16, color: "#6c757d" },
+//   header: {
+//     backgroundColor: "#b2a4dbff",
+//     paddingVertical: 50,
+//     alignItems: "center",
+//     borderBottomLeftRadius: 25,
+//     borderBottomRightRadius: 25,
+//     marginBottom: 25,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 4 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 6,
+//     elevation: 5,
+//   },
+//   name: { fontSize: 24, fontWeight: "bold", color: "#fff", marginTop: 10 },
+//   roleContainer: {
+//     marginTop: 8,
+//     backgroundColor: "#93b6ddff",
+//     paddingHorizontal: 15,
+//     paddingVertical: 5,
+//     borderRadius: 50,
+//   },
+//   role: { color: "#fff", fontSize: 14, fontWeight: "600" },
+//   card: {
+//     backgroundColor: "#fff",
+//     marginHorizontal: 20,
+//     padding: 22,
+//     borderRadius: 15,
+//     shadowColor: "#000",
+//     shadowOpacity: 0.08,
+//     shadowRadius: 8,
+//     shadowOffset: { width: 0, height: 4 },
+//     elevation: 4,
+//     marginBottom: 30,
+//   },
+//   cardTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 15, color: "#343a40", textAlign: "center" },
+//   infoRow: { marginBottom: 15 },
+//   label: { fontSize: 14, color: "#6c757d" },
+//   value: { fontSize: 16, fontWeight: "600", color: "#212529" },
+//   logoutButton: {
+//     flexDirection: "row",
+//     justifyContent: "center",
+//     alignItems: "center",
+//     backgroundColor: "#9b80be",
+//     marginHorizontal: 20,
+//     paddingVertical: 14,
+//     borderRadius: 20,
+//   },
+//   logoutText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8 },
+//   errorText: { textAlign: "center", marginTop: 20, color: "#904f4f", fontSize: 16 },
+// })
+
+
+import {View, Text, Switch, Alert, Button} from 'react-native'
 import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import Ionicons from "react-native-vector-icons/Ionicons"
-import API_BASE_URL from "../../Src/Config"
+import * as Notifications from 'expo-notifications';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Perfil({ navigation }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+export default function Configuracion () {
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token")
-        if (!token) return
+    const [permisoNotificaciones, setPermisoNotificaciones] = useState(false);
+    const [Loading, setLoading] = useState(true);
 
-        const response = await fetch(`${API_BASE_URL}/me`, {
-          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-        })
-        const data = await response.json()
-        if (response.ok) setUser(data.user)
-        else console.log("Error en la respuesta:", data)
-      } catch (error) {
-        console.error("Error obteniendo usuario:", error)
-      } finally {
-        setLoading(false)
-      }
+    const checkPermisos = async () => {
+        const { status } = await Notifications.getPermissionsAsync();
+        const preferencia = await AsyncStorage.getItem('notificaciones_activas');
+        setPermisoNotificaciones(status === 'granted' && preferencia === 'true');
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        checkPermisos();
+    }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            checkPermisos();
+        }, [])
+    );
+
+    // Se crea funcion para validar si la notificacion está o no activada
+
+    const toggleSwitch = async (valor) => {
+        if (valor) {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status === 'granted') {
+                await AsyncStorage.setItem('notificaciones_activas', 'true');
+                setPermisoNotificaciones(true);
+                Alert.alert('Permiso concedido');
+            } else {
+                await AsyncStorage.setItem('notificaciones_activas', 'false');
+                setPermisoNotificaciones(false);
+                Alert.alert('Permiso denegado');
+            }
+        } else {
+            await AsyncStorage.setItem('notificaciones_activas', 'false');
+            setPermisoNotificaciones(false);
+            Alert.alert('Notificaciones desactivadas');
+        }
     }
-    fetchUser()
-  }, [])
 
-  const handleLogout = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/logout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      })
-      const data = await response.json()
-      if (response.ok) {
-        await AsyncStorage.removeItem("token")
-        Alert.alert("👋 Hasta pronto", data.message)
-        navigation.replace("Login")
-      } else Alert.alert("Error", data.message || "No se pudo cerrar sesión")
-    } catch (error) {
-      console.error(error)
-      Alert.alert("Error", "Ocurrió un problema al cerrar sesión")
+    const programarNotificacion = async () => {
+        const { status } = await Notifications.getPermissionsAsync();
+        const preferencia = await AsyncStorage.getItem('notificaciones_activas');
+        if (status !== 'granted' || preferencia !== 'true') {
+            Alert.alert('No tienes permisos para recibir notificaciones');
+            return; // Se calculan aproximadamente dos minutos para que llegue la notificacion 
+        }
+
+        const trigger = new Date(Date.now() + 1 * 60 * 1000); // 2 minutos
+
+        try {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: 'Notificacion programada',
+                    body: 'Esta es una notificacion programada para dos minutos después',
+                },
+                trigger,
+            })
+            Alert.alert('Notificación programada para dos minutos despues');
+        } catch (error) {
+            Alert.alert('Error al prpgramar la notificacion');
+        }
     }
-  }
 
-  if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6f42c1" />
-        <Text style={styles.loadingText}>Cargando tu perfil...</Text>
-      </View>
-    )
-  }
-
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      {user ? (
-        <>
-          <View style={styles.header}>
-            <Ionicons name="person-circle" size={100} color="#fff" />
-            <Text style={styles.name}>{user.name}</Text>
-            <View style={styles.roleContainer}>
-              <Text style={styles.role}>{user.role}</Text>
-            </View>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Información del Usuario</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Nombre</Text>
-              <Text style={styles.value}>{user.name}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Email</Text>
-              <Text style={styles.value}>{user.email}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Rol</Text>
-              <Text style={styles.value}>{user.role}</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={20} color="#fff" />
-            <Text style={styles.logoutText}>Cerrar Sesión</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <Text style={styles.errorText}>No se pudieron cargar los datos.</Text>
-      )}
-    </ScrollView>
-  )
+        <View style = {{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style = {{ fontSize: 18, marginBotton:10}}>
+                Notificaciones: {permisoNotificaciones ? 'Activadas' : 'Desactivadas'}
+            </Text>
+            <Switch
+                value={permisoNotificaciones}
+                onValueChange={toggleSwitch}
+            />
+            <Button title='Programar notificacion en dos minutos' onPress={programarNotificacion} />
+        </View>
+    );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f0f0f5" },
-  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f0f0f5" },
-  loadingText: { marginTop: 10, fontSize: 16, color: "#6c757d" },
-  header: {
-    backgroundColor: "#b2a4dbff",
-    paddingVertical: 50,
-    alignItems: "center",
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    marginBottom: 25,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  name: { fontSize: 24, fontWeight: "bold", color: "#fff", marginTop: 10 },
-  roleContainer: {
-    marginTop: 8,
-    backgroundColor: "#93b6ddff",
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 50,
-  },
-  role: { color: "#fff", fontSize: 14, fontWeight: "600" },
-  card: {
-    backgroundColor: "#fff",
-    marginHorizontal: 20,
-    padding: 22,
-    borderRadius: 15,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
-    marginBottom: 30,
-  },
-  cardTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 15, color: "#343a40", textAlign: "center" },
-  infoRow: { marginBottom: 15 },
-  label: { fontSize: 14, color: "#6c757d" },
-  value: { fontSize: 16, fontWeight: "600", color: "#212529" },
-  logoutButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#9b80be",
-    marginHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 20,
-  },
-  logoutText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8 },
-  errorText: { textAlign: "center", marginTop: 20, color: "#904f4f", fontSize: 16 },
-})

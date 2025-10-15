@@ -41,6 +41,7 @@ export default function Tabs() {
         options={{ headerShown: false, 
         title: "Perfil usuario" }} 
       />
+      
     </Tab.Navigator>
   );
 }

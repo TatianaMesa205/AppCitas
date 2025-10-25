@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Modal, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Image,
+  Alert,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import API_BASE_URL from "../../Src/Config";
 
@@ -7,17 +18,10 @@ export default function Registro({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const roles = [
-    { label: "Administrador", value: "admin" },
-    { label: "Paciente", value: "paciente" },
-  ];
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !role) {
-      alert("Error", "Por favor completa todos los campos");
+    if (!name || !email || !password) {
+      Alert.alert("⚠️ Error", "Por favor completa todos los campos");
       return;
     }
 
@@ -32,199 +36,186 @@ export default function Registro({ navigation }) {
           name,
           email,
           password,
-          role,
+          role: "paciente",
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Éxito", "Usuario registrado correctamente 💖");
+        Alert.alert("✅ Éxito", "Paciente registrado correctamente 💜");
         navigation.navigate("Login");
       } else {
-        console.log("Errores:", data);
-        alert("Error", "No se pudo registrar el usuario");
+        console.log("❌ Errores:", data);
+        Alert.alert("❌ Error", data.message || "No se pudo registrar el paciente");
       }
     } catch (error) {
-      console.error("Error en el registro:", error);
-      Alert.alert("Error", "Hubo un problema con la conexión al servidor");
+      console.error("🚨 Error en el registro:", error);
+      Alert.alert("🚨 Error", "Hubo un problema con la conexión al servidor");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>✨ Registro ✨</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        placeholderTextColor="#cc66beff"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Correo"
-        placeholderTextColor="#cc66beff"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        placeholderTextColor="#cc66beff"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      {/* Botón para seleccionar rol */}
-      <TouchableOpacity
-        style={styles.selectButton}
-        onPress={() => setModalVisible(true)}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#f7e9ff" }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <View style={styles.selectRow}>
-          <Text style={styles.selectText}>
-            {role ? roles.find((r) => r.value === role)?.label : "Seleccionar Rol"}
-          </Text>
-          <Ionicons name="chevron-down" size={20} color="#9b59b6" />
-        </View>
-      </TouchableOpacity>
+        <View style={styles.container}>
 
-      {/* Modal estilizado */}
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Selecciona tu rol</Text>
-            <FlatList
-              data={roles}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.option}
-                  onPress={() => {
-                    setRole(item.value);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.optionText}>{item.label}</Text>
-                </TouchableOpacity>
-              )}
-            />
+          <Text style={styles.title}>Crea tu cuenta 💖</Text>
+          <Text style={styles.subtitle}>Únete para comenzar tu experiencia</Text>
+
+          <View style={styles.card}>
+            {/* Nombre */}
+            <View style={styles.inputContainer}>
+              <Ionicons name="person-outline" size={22} color="#8b5fbf" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Nombre completo"
+                placeholderTextColor="#b28fcf"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            {/* Correo */}
+            <View style={styles.inputContainer}>
+              <Ionicons name="mail-outline" size={22} color="#8b5fbf" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Correo electrónico"
+                placeholderTextColor="#b28fcf"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+
+            {/* Contraseña */}
+            <View style={styles.inputContainer}>
+              <Ionicons name="lock-closed-outline" size={22} color="#8b5fbf" style={styles.icon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                placeholderTextColor="#b28fcf"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
+
+            {/* Botón Registro */}
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Registrarme</Text>
+            </TouchableOpacity>
+
+            {/* Ir a Login */}
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.loginText}>
+                ¿Ya tienes cuenta? <Text style={styles.loginHighlight}>Inicia sesión</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </Modal>
-
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.button, styles.secondaryButton]}
-        onPress={() => navigation.navigate("Login")}
-      >
-        <Text style={styles.buttonText}>Ya tengo cuenta</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ead1f0ff",
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: "center",
-    padding: 20,
+    paddingVertical: 60,
+  },
+  container: {
+    alignItems: "center",
+    paddingHorizontal: 25,
+  },
+  logo: {
+    width: 90,
+    height: 90,
+    marginBottom: 15,
+    tintColor: "#a35bcc",
   },
   title: {
     fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 30,
+    fontWeight: "700",
+    color: "#732d91",
     textAlign: "center",
-    color: "#95519bff",
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#8f5cae",
+    marginBottom: 25,
+    textAlign: "center",
+  },
+  card: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e6c4f2",
+    backgroundColor: "#faf4ff",
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+  },
+  icon: {
+    marginRight: 8,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#eb99ffff",
-    backgroundColor: "#fff0f5",
-    padding: 12,
-    marginVertical: 8,
-    borderRadius: 12,
+    flex: 1,
     fontSize: 16,
-    color: "#5e0066ff",
-  },
-  selectButton: {
-    borderWidth: 1,
-    borderColor: "#eb99ffff",
-    backgroundColor: "#fff0f5",
-    padding: 14,
-    marginVertical: 8,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  selectText: {
-    fontSize: 16,
-    color: "#cc66beff",
+    paddingVertical: 10,
+    color: "#4b006e",
   },
   button: {
-    backgroundColor: "#e29bdcff",
+    backgroundColor: "#b86fd7",
     paddingVertical: 15,
     borderRadius: 25,
-    marginVertical: 10,
     alignItems: "center",
-    elevation: 4,
-  },
-  secondaryButton: {
-    backgroundColor: "#855ba8ff",
+    marginTop: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   buttonText: {
     color: "white",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "700",
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
+  loginButton: {
+    marginTop: 20,
     alignItems: "center",
   },
-  modalContainer: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 20,
-    width: "80%",
-    elevation: 5,
-    textAlign: "center",
+  loginText: {
+    color: "#7a4ba3",
+    fontSize: 15,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#632e68ff",
-    marginBottom: 15,
-    textAlign: "center",
+  loginHighlight: {
+    color: "#b86fd7",
+    fontWeight: "700",
   },
-  option: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    alignItems: "flex-start",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#621169ff",
-  },
-  selectRow: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  width: "100%",
-},
-
 });

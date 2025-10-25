@@ -11,6 +11,7 @@ import MedicosStack from "./medicosStack";
 import ConsultoriosStack from "./consultoriosStack";
 import EspecialidadesStack from "./especialidadesStack";
 import CitasStack from "./citasStack";
+import RegistroStack from "./registroaStack";
 
 const Stack = createStackNavigator();
 
@@ -45,6 +46,11 @@ export default function InicioStack() {
       <Stack.Screen 
         name="Citas" 
         component={CitasStack} 
+        options={{ headerShown: false }} 
+      />
+      <Stack.Screen 
+        name="RegistroA" 
+        component={RegistroStack} 
         options={{ headerShown: false }} 
       />
     </Stack.Navigator>

@@ -1,7 +1,7 @@
-// PerfilStack.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Perfil from "../../Screen/Perfil/perfil";
+import EditarPerfil from "../../Screen/Perfil/editarPerfil"
 
 const Stack = createStackNavigator();
 
@@ -13,6 +13,12 @@ export default function PerfilStack() {
         component={Perfil} 
         options={{ title: "Perfil de Usuario" }} 
       />
+      <Stack.Screen 
+        name="EditarPerfil" 
+        component={EditarPerfil} 
+        options={{ title: "Edita tu perfil" }} 
+      />
     </Stack.Navigator>
+    
   );
 }

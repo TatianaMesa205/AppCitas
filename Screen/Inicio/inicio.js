@@ -17,7 +17,6 @@ export default function Inicio({ navigation }) {
         const token = await AsyncStorage.getItem("token");
         if (!token) return;
 
-        // ---- Obtener usuario (ya lo tenías) ----
         const response = await fetch(`${API_BASE_URL}/me`, {
           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         });
@@ -25,16 +24,12 @@ export default function Inicio({ navigation }) {
         const data = await response.json();
         if (response.ok) setUserName(data.user?.name || "Usuario");
 
-        // ---- Obtener contador de médicos ----
         const resMedicos = await fetch(`${API_BASE_URL}/contadorMedicos`, {
           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         });
         const dataMedicos = await resMedicos.json();
         if (resMedicos.ok) setMedicosCount(dataMedicos.cantidad_medicos || 0);
 
-        
-
-        // ---- Obtener contador de pacientes ----
         const resPacientes = await fetch(`${API_BASE_URL}/contadorPacientes`, {
           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         });
@@ -45,7 +40,6 @@ export default function Inicio({ navigation }) {
       }
     };
 
-    // Saludo dinámico
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("🌅 Buenos días");
     else if (hour < 18) setGreeting("☀️ Buenas tardes");
@@ -58,10 +52,7 @@ export default function Inicio({ navigation }) {
     <ScrollView style={styles.container}>
       {/* Header con avatar y saludo */}
       <Animatable.View animation="fadeInDown" style={styles.header}>
-        <Image
-          source={{ uri: "https://i.pravatar.cc/150" }}
-          style={styles.avatar}
-        />
+        <Image source={{ uri: "https://i.pravatar.cc/150" }} style={styles.avatar} />
         <View>
           <Text style={styles.greeting}>{greeting}</Text>
           <Text style={styles.title}>Bienvenido 💖 {userName}</Text>
@@ -169,6 +160,17 @@ export default function Inicio({ navigation }) {
       <Animatable.Text animation="fadeInUp" delay={700} style={styles.footer}>
         💡 "Un sistema de salud organizado salva más vidas cada día"
       </Animatable.Text>
+
+      {/* 🔹 Nuevo botón para ir a RegistroA */}
+      <Animatable.View animation="fadeInUp" delay={800} style={styles.registerContainer}>
+        <TouchableOpacity
+          style={styles.registerButton}
+          onPress={() => navigation.navigate("RegistroA")}
+        >
+          <Ionicons name="person-add-outline" size={22} color="#fff" />
+          <Text style={styles.registerText}>Ir a Registro Administrativo</Text>
+        </TouchableOpacity>
+      </Animatable.View>
     </ScrollView>
   );
 }
@@ -179,11 +181,7 @@ const styles = StyleSheet.create({
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
   greeting: { fontSize: 16, color: "#444" },
   title: { fontSize: 20, fontWeight: "bold", color: "#2d5564ff" },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
+  statsRow: { flexDirection: "row", justifyContent: "space-around", marginBottom: 20 },
   statBox: {
     backgroundColor: "#fff",
     padding: 15,
@@ -194,11 +192,7 @@ const styles = StyleSheet.create({
   },
   statNumber: { fontSize: 20, fontWeight: "bold", color: "#2d5564ff" },
   statLabel: { fontSize: 14, color: "#555" },
-  dashboard: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
+  dashboard: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
   panel: {
     borderRadius: 20,
     padding: 15,
@@ -211,18 +205,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
-  panelLarge: {
-    width: "100%",
-    height: 160,
-  },
-  panelMedium: {
-    width: "47%",
-    height: 190, // 🔹 más largo para que entren bien los botones
-  },
-  panelWide: {
-    width: "100%",
-    height: 160,
-  },
+  panelLarge: { width: "100%", height: 160 },
+  panelMedium: { width: "47%", height: 190 },
+  panelWide: { width: "100%", height: 160 },
   panelTitleAlt: {
     fontSize: 20,
     fontWeight: "bold",
@@ -244,18 +229,33 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     margin: 3,
   },
-  secondaryButtonAlt: {
-    backgroundColor: "rgba(0,0,0,0.3)",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
+  secondaryButtonAlt: { backgroundColor: "rgba(0,0,0,0.3)" },
+  buttonText: { color: "#fff", fontWeight: "600", fontSize: 14 },
   footer: {
     marginTop: 20,
     textAlign: "center",
     fontStyle: "italic",
     color: "#555",
+  },
+  // 🔹 Estilos del botón "RegistroA"
+  registerContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  registerButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#4b6584",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    elevation: 4,
+  },
+  registerText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 15,
+    marginLeft: 8,
   },
 });

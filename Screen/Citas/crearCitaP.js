@@ -169,10 +169,29 @@ export default function CrearCitaP({ route, navigation }) {
       })()
     : new Date();
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) setFecha(selectedDate.toISOString().split("T")[0]);
-  };
+    const handleDateChange = (event, selectedDate) => {
+      setShowDatePicker(false)
+      if (selectedDate) {
+        // Evitar que se seleccione una fecha anterior al día actual
+        const hoy = new Date()
+        hoy.setHours(0, 0, 0, 0)
+        selectedDate.setHours(0, 0, 0, 0)
+
+        if (selectedDate < hoy) {
+          Alert.alert("⚠️ No puedes seleccionar una fecha anterior al día actual.")
+          return
+        }
+
+        // ✅ Corregir desfase (evitar que reste un día por zona horaria)
+        const year = selectedDate.getFullYear()
+        const month = String(selectedDate.getMonth() + 1).padStart(2, "0")
+        const day = String(selectedDate.getDate()).padStart(2, "0")
+        const fechaFormateada = `${year}-${month}-${day}`
+
+        setFecha(fechaFormateada)
+      }
+    }
+
 
   if (loading)
     return (

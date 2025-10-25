@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { 
-  View, Text, TextInput, TouchableOpacity, 
-  StyleSheet, Alert, ActivityIndicator, 
-  Modal, FlatList, Platform 
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList, Platform 
 } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import DateTimePicker from "@react-native-community/datetimepicker"
@@ -83,8 +80,30 @@ export default function EditarCita({ route, navigation }) {
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false)
-    if (selectedDate) setFecha(selectedDate.toISOString().split("T")[0])
+    if (selectedDate) {
+      // Evitar que se seleccione una fecha anterior al día actual
+      const hoy = new Date()
+      hoy.setHours(0, 0, 0, 0)
+      selectedDate.setHours(0, 0, 0, 0)
+
+      if (selectedDate < hoy) {
+        Alert.alert("⚠️ No puedes seleccionar una fecha anterior al día actual.")
+        return
+      }
+
+      // ✅ Corregir desfase (evitar que reste un día por zona horaria)
+      const timezoneOffset = selectedDate.getTimezoneOffset() * 60000
+      const fechaLocal = new Date(selectedDate.getTime() - timezoneOffset)
+
+      const year = fechaLocal.getFullYear()
+      const month = String(fechaLocal.getMonth() + 1).padStart(2, "0")
+      const day = String(fechaLocal.getDate()).padStart(2, "0")
+      const fechaFormateada = `${year}-${month}-${day}`
+
+      setFecha(fechaFormateada)
+    }
   }
+
 
   if (loading) return (
     <View style={styles.loadingContainer}>

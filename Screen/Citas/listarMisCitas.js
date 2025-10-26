@@ -58,7 +58,7 @@ export default function ListarMisCitas({ navigation }) {
 
   const handleCrearCita = () => {
     if (!idPaciente) {
-      Alert.alert("Registro requerido", "⚠️ Debes registrarte primero como paciente para poder crear una cita.")
+      Alert.alert("Recuerda", "⚠️ Debes completar primero el formulario para crear una cita.")
       return
     }
     navigation.navigate("CrearCitaP", { idPaciente }) // 👈 aquí lo pasas

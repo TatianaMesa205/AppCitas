@@ -188,7 +188,7 @@ const lightTheme = {
   text: "#212529",
   textSecondary: "#6c757d",
   button: "#a387d4",
-  logout: "#9b80be",
+  logout: "#6a74ceff",
   icon: "#6f42c1",
   error: "#904f4f",
 }

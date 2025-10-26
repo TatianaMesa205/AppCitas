@@ -8,6 +8,12 @@ export default function DetalleCitaP({ route, navigation }) {
   const { cita } = route.params
 
   const programarNotificacion = async () => {
+    // ✅ Validar que la cita esté confirmada antes de continuar
+    if ((cita.estado || "").toLowerCase() !== "confirmada") {
+      Alert.alert("No se puede programar una notificación si la cita no ha sido confirmada")
+      return
+    }
+
     const { status } = await Notifications.getPermissionsAsync()
     const preferencia = await AsyncStorage.getItem("notificaciones_activas")
 

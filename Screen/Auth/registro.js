@@ -25,6 +25,11 @@ export default function Registro({ navigation }) {
       return;
     }
 
+    if (password.length < 8) {
+      Alert.alert("🔒 Contraseña inválida", "La contraseña debe tener mínimo 8 caracteres");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/registrar`, {
         method: "POST",
@@ -55,6 +60,7 @@ export default function Registro({ navigation }) {
     }
   };
 
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "#f7e9ff" }}
@@ -76,7 +82,7 @@ export default function Registro({ navigation }) {
               <Ionicons name="person-outline" size={22} color="#8b5fbf" style={styles.icon} />
               <TextInput
                 style={styles.input}
-                placeholder="Nombre completo"
+                placeholder="Nombre de usuario"
                 placeholderTextColor="#b28fcf"
                 value={name}
                 onChangeText={setName}

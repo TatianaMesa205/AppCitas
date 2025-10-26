@@ -18,6 +18,12 @@ export default function EditarPerfil({ route, navigation }) {
       return
     }
 
+    // 🔒 Validar longitud mínima de la contraseña
+    if (password && password.length < 8) {
+      Alert.alert("⚠️ Error", "La contraseña debe tener mínimo ocho caracteres")
+      return
+    }
+
     try {
       const token = await AsyncStorage.getItem("token")
 
@@ -41,7 +47,7 @@ export default function EditarPerfil({ route, navigation }) {
       if (response.ok) {
         Alert.alert("✅ Éxito", "Perfil actualizado correctamente")
         // 🔁 Redirige correctamente al perfil del usuario
-        navigation.navigate("PerfilUsuario", { reload: true })
+        navigation.navigate("PerfilUsuarioP", { reload: true })
       } else {
         console.log("❌ Error backend:", data)
         Alert.alert("❌ Error", data.message || "No se pudo actualizar el perfil")
@@ -73,14 +79,13 @@ export default function EditarPerfil({ route, navigation }) {
 
         <Text style={styles.label}>Correo electrónico</Text>
         <TextInput
-        style={[styles.input, { backgroundColor: "#eee", color: "#777" }]} // ⚙️ campo no editable
-        placeholder="Correo electrónico"
-        placeholderTextColor="#b0b0b0"
-        keyboardType="email-address"
-        value={email}
-        editable={false} // 🚫 evita edición
+          style={[styles.input, { backgroundColor: "#eee", color: "#777" }]} // ⚙️ campo no editable
+          placeholder="Correo electrónico"
+          placeholderTextColor="#b0b0b0"
+          keyboardType="email-address"
+          value={email}
+          editable={false} // 🚫 evita edición
         />
-
 
         <Text style={styles.label}>Contraseña (opcional)</Text>
         <TextInput

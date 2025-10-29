@@ -52,7 +52,7 @@ export default function Inicio({ navigation }) {
     <ScrollView style={styles.container}>
       {/* Header con avatar y saludo */}
       <Animatable.View animation="fadeInDown" style={styles.header}>
-        <Image source={{ uri: "https://i.pravatar.cc/150" }} style={styles.avatar} />
+        <Image source={{ uri: "https://i.pinimg.com/1200x/85/20/75/852075b07448352fbdaf83d6ebe81ec7.jpg" }} style={styles.avatar} />
         <View>
           <Text style={styles.greeting}>{greeting}</Text>
           <Text style={styles.title}>Bienvenido 💖 {userName}</Text>

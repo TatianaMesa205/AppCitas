@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList, Platform 
-} from "react-native"
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal, FlatList, Platform } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import DateTimePicker from "@react-native-community/datetimepicker"
 import Ionicons from "react-native-vector-icons/Ionicons"
@@ -78,6 +77,7 @@ export default function EditarCita({ route, navigation }) {
     }
   }
 
+  // ✅ Fecha corregida igual que en CrearCita
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false)
     if (selectedDate) {
@@ -92,25 +92,22 @@ export default function EditarCita({ route, navigation }) {
       }
 
       // ✅ Corregir desfase (evitar que reste un día por zona horaria)
-      const timezoneOffset = selectedDate.getTimezoneOffset() * 60000
-      const fechaLocal = new Date(selectedDate.getTime() - timezoneOffset)
-
-      const year = fechaLocal.getFullYear()
-      const month = String(fechaLocal.getMonth() + 1).padStart(2, "0")
-      const day = String(fechaLocal.getDate()).padStart(2, "0")
+      const year = selectedDate.getFullYear()
+      const month = String(selectedDate.getMonth() + 1).padStart(2, "0")
+      const day = String(selectedDate.getDate()).padStart(2, "0")
       const fechaFormateada = `${year}-${month}-${day}`
 
       setFecha(fechaFormateada)
     }
   }
 
-
-  if (loading) return (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#a67c52"/>
-      <Text style={{ marginTop:10, color:"#444" }}>Cargando...</Text>
-    </View>
-  )
+  if (loading)
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#a67c52" />
+        <Text style={{ marginTop: 10, color: "#444" }}>Cargando...</Text>
+      </View>
+    )
 
   return (
     <KeyboardAwareScrollView
@@ -127,7 +124,7 @@ export default function EditarCita({ route, navigation }) {
           <Text style={styles.selectText}>
             {idPaciente ? pacientes.find(p => p.id === idPaciente)?.nombre : "Selecciona Paciente"}
           </Text>
-          <Ionicons name="chevron-down" size={18} color="#a67c52"/>
+          <Ionicons name="chevron-down" size={18} color="#a67c52" />
         </TouchableOpacity>
 
         {/* Médico */}
@@ -136,7 +133,7 @@ export default function EditarCita({ route, navigation }) {
           <Text style={styles.selectText}>
             {idMedico ? medicos.find(m => m.id === idMedico)?.nombre_m + " " + medicos.find(m => m.id === idMedico)?.apellido_m : "Selecciona Médico"}
           </Text>
-          <Ionicons name="chevron-down" size={18} color="#a67c52"/>
+          <Ionicons name="chevron-down" size={18} color="#a67c52" />
         </TouchableOpacity>
 
         {/* Consultorio */}
@@ -145,7 +142,7 @@ export default function EditarCita({ route, navigation }) {
           <Text style={styles.selectText}>
             {idConsultorio ? "Consultorio " + consultorios.find(c => c.id === idConsultorio)?.numero : "Selecciona Consultorio"}
           </Text>
-          <Ionicons name="chevron-down" size={18} color="#a67c52"/>
+          <Ionicons name="chevron-down" size={18} color="#a67c52" />
         </TouchableOpacity>
 
         {/* Fecha */}
@@ -154,31 +151,31 @@ export default function EditarCita({ route, navigation }) {
           <Text style={{ color: fecha ? "#5c4033" : "#aaa" }}>{fecha || "Selecciona Fecha"}</Text>
         </TouchableOpacity>
         {showDatePicker && (
-          <DateTimePicker 
-            value={fecha ? new Date(fecha) : new Date()} 
-            mode="date" 
-            display={Platform.OS==="ios"?"spinner":"default"} 
+          <DateTimePicker
+            value={fecha ? new Date(fecha) : new Date()}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
             onChange={handleDateChange}
           />
         )}
 
         {/* Hora */}
         <Text style={styles.label}>Hora</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="HH:MM" 
-          placeholderTextColor="#b0b0b0" 
-          value={hora} 
+        <TextInput
+          style={styles.input}
+          placeholder="HH:MM"
+          placeholderTextColor="#b0b0b0"
+          value={hora}
           onChangeText={setHora}
         />
 
         {/* Motivo */}
         <Text style={styles.label}>Motivo</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="Motivo de la cita" 
-          placeholderTextColor="#b0b0b0" 
-          value={motivo} 
+        <TextInput
+          style={styles.input}
+          placeholder="Motivo de la cita"
+          placeholderTextColor="#b0b0b0"
+          value={motivo}
           onChangeText={setMotivo}
         />
 
@@ -186,7 +183,7 @@ export default function EditarCita({ route, navigation }) {
         <Text style={styles.label}>Estado</Text>
         <TouchableOpacity style={styles.selectButton} onPress={() => setModalEstadoVisible(true)}>
           <Text style={styles.selectText}>{estado}</Text>
-          <Ionicons name="chevron-down" size={18} color="#a67c52"/>
+          <Ionicons name="chevron-down" size={18} color="#a67c52" />
         </TouchableOpacity>
 
         {/* Botón */}
@@ -199,10 +196,10 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalPacienteVisible} animationType="fade" onRequestClose={() => setModalPacienteVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList 
-              data={pacientes} 
-              keyExtractor={item => item.id.toString()} 
-              renderItem={({item}) => (
+            <FlatList
+              data={pacientes}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
                 <TouchableOpacity style={styles.option} onPress={() => { setIdPaciente(item.id); setModalPacienteVisible(false) }}>
                   <Text style={styles.optionText}>{item.nombre}</Text>
                 </TouchableOpacity>
@@ -215,10 +212,10 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalMedicoVisible} animationType="fade" onRequestClose={() => setModalMedicoVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList 
-              data={medicos} 
-              keyExtractor={item => item.id.toString()} 
-              renderItem={({item}) => (
+            <FlatList
+              data={medicos}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
                 <TouchableOpacity style={styles.option} onPress={() => { setIdMedico(item.id); setModalMedicoVisible(false) }}>
                   <Text style={styles.optionText}>{item.nombre_m} {item.apellido_m}</Text>
                 </TouchableOpacity>
@@ -231,10 +228,10 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalConsultorioVisible} animationType="fade" onRequestClose={() => setModalConsultorioVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList 
-              data={consultorios} 
-              keyExtractor={item => item.id.toString()} 
-              renderItem={({item}) => (
+            <FlatList
+              data={consultorios}
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => (
                 <TouchableOpacity style={styles.option} onPress={() => { setIdConsultorio(item.id); setModalConsultorioVisible(false) }}>
                   <Text style={styles.optionText}>Consultorio {item.numero}</Text>
                 </TouchableOpacity>
@@ -247,10 +244,10 @@ export default function EditarCita({ route, navigation }) {
       <Modal transparent visible={modalEstadoVisible} animationType="fade" onRequestClose={() => setModalEstadoVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <FlatList 
-              data={estadosOpciones} 
-              keyExtractor={(item, index) => index.toString()} 
-              renderItem={({item}) => (
+            <FlatList
+              data={estadosOpciones}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => (
                 <TouchableOpacity style={styles.option} onPress={() => { setEstado(item); setModalEstadoVisible(false) }}>
                   <Text style={styles.optionText}>{item}</Text>
                 </TouchableOpacity>
@@ -327,10 +324,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loadingContainer: {
-    flex:1, justifyContent:"center", alignItems:"center", backgroundColor:"#f5f0e6"
+    flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#f5f0e6"
   },
-  modalOverlay: { flex:1, backgroundColor:"rgba(0,0,0,0.4)", justifyContent:"center", alignItems:"center" },
-  modalContainer: { backgroundColor:"#fff", padding:20, borderRadius:20, width:"80%" },
-  option: { padding:12, borderBottomWidth:1, borderBottomColor:"#eee" },
-  optionText: { fontSize:16, color:"#5c4033" },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "center", alignItems: "center" },
+  modalContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 20, width: "80%" },
+  option: { padding: 12, borderBottomWidth: 1, borderBottomColor: "#eee" },
+  optionText: { fontSize: 16, color: "#5c4033" },
 })
